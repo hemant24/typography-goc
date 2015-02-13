@@ -1,0 +1,11 @@
+{
+  "name": "spaghetti",
+  "description": "Wrapper around gst-launch for creating GStreamer pipelines",
+  "version": "0.1.1",
+  "repository": {
+    "type" : "git",
+    "url" : "git://github.com/tomas/spaghetti.git"
+  },
+  "author": "Tomás Pollak <tomas@forkhq.com>",
+  "main": "./lib/spaghetti"
+}
