@@ -1,0 +1,32 @@
+<html>
+<head>
+<script src = 'fabric.js'></script>
+</head>
+
+<body>
+<h1> heel </h1>
+<canvas id="cc" width="500" height="500"
+	style="border:1px solid #000000;">
+</canvas>
+</body>
+<script>
+
+var canvas = new fabric.Canvas('cc');
+
+// create a rectangle object
+var rect = new fabric.Rect({
+  left: 100,
+  top: 100,
+  fill: 'red',
+  width: 20,
+  height: 20
+});
+canvas.add(rect);
+rect.animate('angle', 45, {
+  onChange: canvas.renderAll.bind(canvas)
+});
+// "add" rectangle onto canvas
+
+
+</script>
+</html>
