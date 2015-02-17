@@ -1,14 +1,17 @@
 var THREE = require('../../')
 var nodejs=true,
     WebGL = require('../../webgl.js')
-	
-    , document = WebGL.document();
-	//console.log(document)
-var fs = require('fs')
-  , jsdom = require('jsdom').jsdom
-  //, document = jsdom('<!doctype html><html><head></head><body></body></html>')
-  , window = document.parentWindow;
-var alert=console.error;
+    document = WebGL.document();
+
+document.setTitle("Lesson02");
+requestAnimationFrame = document.requestAnimationFrame;
+alert=console.error;
+
+
+//Read and eval library
+fs=require('fs');
+eval(fs.readFileSync(__dirname+ '/glMatrix-0.9.5.min.js','utf8'));
+var renderer;
 var shaders= {
     "shader-fs" : 
       [ "#ifdef GL_ES",
@@ -34,12 +37,28 @@ var shaders= {
             "    vColor = aVertexColor;",
             "}" ].join("\n")
 };
-var container, stats;
 
-			var camera, scene, renderer;
+var gl, camera,scene;
 
-			var mesh;
-eval(fs.readFileSync(__dirname+ '/glMatrix-0.9.5.min.js','utf8'));
+function initGL(canvas) {
+  try {
+    gl = canvas.getContext("experimental-webgl");
+    gl.viewportWidth = canvas.width;
+    gl.viewportHeight = canvas.height;
+	renderer = new THREE.WebGLRenderer( { antialias: false, clearColor: 0x333333, clearAlpha: 1, alpha: false, canvas : canvas } );
+	camera = new THREE.PerspectiveCamera( 27, canvas.width / canvas.height, 5, 3500 );
+	camera.position.z = 2750;
+
+	scene = new THREE.Scene();
+	console.log(gl.createFramebuffer())
+  } catch (e) {
+  }
+  if (!gl) {
+    alert("Could not initialise WebGL, sorry :-(");
+  }
+}
+
+
 function getShader(gl, id) {
   var shader;
   if(nodejs) {
@@ -206,149 +225,30 @@ function drawScene() {
   setMatrixUniforms();
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexPositionBuffer.numItems);
 
+  requestAnimationFrame(drawScene);
+
+
+  renderer.render( scene, camera );
 }
 
 
 
+function webGLStart() {
+  var canvas = document.createElement("lesson02-canvas");
+  initGL(canvas);
+  document.on("resize", function (evt) {
+    // console.log("resize "+canvas.width+" x "+canvas.height);
+    gl.viewportWidth=canvas.width;
+    gl.viewportHeight=canvas.height;
+  });
+  initShaders()
+  initBuffers();
 
-			init();
-			animate();
+  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.enable(gl.DEPTH_TEST);
 
-			function init() {
-			var canvas = document.createElement("lesson02-canvas");
-			 
-			  try {
-    var gl = canvas.getContext("experimental-webgl");
-    gl.viewportWidth = canvas.width;
-    gl.viewportHeight = canvas.height;
-	console.log("resize "+canvas.width+" x "+canvas.height);
-	//console.log(gl)
-  } catch (e) {
-  }
-  if (!gl) {
-    alert("Could not initialise WebGL, sorry :-(");
-  }
-  
-			
-				renderer = new THREE.WebGLRenderer( { antialias: false, clearColor: 0x333333, clearAlpha: 1, alpha: false, canvas : canvas } );
-				//
+  drawScene();
+}
 
-				camera = new THREE.PerspectiveCamera( 27, canvas.width / canvas.height, 5, 3500 );
-				camera.position.z = 2750;
+webGLStart();
 
-				scene = new THREE.Scene();
-				scene.fog = new THREE.Fog( 0x050505, 2000, 3500 );
-
-				//
-
-				var particles = 500000;
-
-				var geometry = new THREE.BufferGeometry();
-				geometry.attributes = {
-
-					position: {
-						itemSize: 3,
-						array: new Float32Array( particles * 3 )
-					},
-					color: {
-						itemSize: 3,
-						array: new Float32Array( particles * 3 )
-					}
-
-				}
-
-
-				var positions = geometry.attributes.position.array;
-				var colors = geometry.attributes.color.array;
-
-				var color = new THREE.Color();
-
-				var n = 1000, n2 = n / 2; // particles spread in the cube
-
-				for ( var i = 0; i < positions.length; i += 3 ) {
-
-					// positions
-
-					var x = Math.random() * n - n2;
-					var y = Math.random() * n - n2;
-					var z = Math.random() * n - n2;
-
-					positions[ i ]     = x;
-					positions[ i + 1 ] = y;
-					positions[ i + 2 ] = z;
-
-					// colors
-
-					var vx = ( x / n ) + 0.5;
-					var vy = ( y / n ) + 0.5;
-					var vz = ( z / n ) + 0.5;
-
-					color.setRGB( vx, vy, vz );
-
-					colors[ i ]     = color.r;
-					colors[ i + 1 ] = color.g;
-					colors[ i + 2 ] = color.b;
-
-				}
-
-				geometry.computeBoundingSphere();
-
-				//
-
-				var material = new THREE.ParticleBasicMaterial( { size: 15, vertexColors: true } );
-
-				particleSystem = new THREE.ParticleSystem( geometry, material );
-				scene.add( particleSystem );
-
-				//
-
-				//renderer = new THREE.WebGLRenderer( { antialias: false, clearColor: 0x333333, clearAlpha: 1, alpha: false } );
-				renderer.setSize(canvas.width , canvas.height );
-				renderer.setClearColor( scene.fog.color, 1 );
-
-				//container.appendChild( renderer.domElement );
-
-				
-				//window.addEventListener( 'resize', onWindowResize, false );
-
-			}
-
-			function onWindowResize() {
-
-				windowHalfX = window.innerWidth / 2;
-				windowHalfY = window.innerHeight / 2;
-
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
-
-				renderer.setSize( window.innerWidth, window.innerHeight );
-
-			}
-
-			//
-var curFrame = 0
-			function animate() {
-
-				requestAnimationFrame( animate );
-
-				render();
-				
-
-			}
-
-			function render() {
-
-				var time = Date.now() * 0.001;
-
-				particleSystem.rotation.x = time * 0.25;
-				particleSystem.rotation.y = time * 0.5;
-
-				renderer.render( scene, camera );
-				var stream = renderer.domElement.createPNGStream()
-	var path = __dirname + '/frame-' + (++curFrame) + '.png'
-    , out = fs.createWriteStream(path);
-
-	  console.log('Writing... (%s)', curFrame);
-	  stream.pipe(out);
-
-			}

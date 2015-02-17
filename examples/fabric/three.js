@@ -26214,7 +26214,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 				stencil: _stencil,
 				preserveDrawingBuffer: _preserveDrawingBuffer
 			};
-			console.log(attributes)
+
 			_gl = _canvas.getContext( 'webgl', attributes ) || _canvas.getContext( 'experimental-webgl', attributes );
 			
 			if ( _gl === null ) {

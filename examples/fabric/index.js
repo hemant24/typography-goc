@@ -1,8 +1,9 @@
 var fs = require('fs'),
-    fabric = require('fabric').fabric;
-   
+    fabric = require('fabric').fabric,
+   Camera = require('./camera')
 
 var canvas = fabric.createCanvasForNode(512, 378);
+var camera = new Camera(canvas.getContext('2d'))
 
 var redish = new fabric.Color('#f55');
 // create a rectangle object
@@ -70,7 +71,11 @@ text1.animate('angle', 90, {
 
 var i = 0
 function output(){
+camera.begin();
+	//camera.zoomTo(200);
+	camera.moveTo(12%i,2);
 	canvas.renderAll()
+	 camera.end();
 	var stream = canvas.createPNGStream()
 	var  out = fs.createWriteStream(__dirname + '/frame-' + i +'.png');
 	i++;

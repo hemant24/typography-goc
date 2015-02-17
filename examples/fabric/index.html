@@ -1,6 +1,8 @@
 <html>
 <head>
 <script src = 'http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js'></script>
+<script src = 'three.js'></script>
+<script src = 'camera_web.js'></script>
 </head>
 
 <body>
@@ -12,7 +14,7 @@
 <script>
 
 var canvas = new fabric.Canvas('cc');
-
+var camera = new Camera(canvas.getContext('2d'));
 var text1 = new fabric.Text(
 "Hemant",
 {
@@ -44,10 +46,25 @@ var text3 = new fabric.Text(
 
 });
 
+var text4 = new fabric.Text(
+"Danger",
+{
+  left: 1700,
+  top: 0,
+   fontFamily: 'Impact',
+	fill   : 'red',
+   fontSize: 130,
+   onChange: output,
+
+});
+
 canvas.add(text1)
 canvas.add(text2)
 canvas.add(text3)
-
+canvas.add(text4)
+text4.animate('angle', 90, {duration: 2000,
+  onChange: output,
+  easing: fabric.util.ease.easeOutBounce})
 
 text2.animate('left', 80, {duration: 2000,
   onChange: output,
@@ -64,9 +81,14 @@ text1.animate('angle', 90, {
 
 var i = 0
 function output(){
-	canvas.renderAll()
+camera.begin();
+	camera.moveTo(1700,80);
+	 canvas.renderAll()
 	//var stream = canvas.createPNGStream()
 	//var  out = fs.createWriteStream(__dirname + '/frame-' + i +'.png');
+	 camera.end();
+	 
+	
 	i++;
 	console.log('hello')
 	//console.log(rect)

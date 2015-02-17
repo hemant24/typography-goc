@@ -1,0 +1,259 @@
+<html>
+<head>
+<script src = 'fabric.js'></script>
+<script src = 'camera_web.js'></script>
+<script src = 'jquery.js'></script>
+</head>
+<style>
+.canvas-container  {
+float : left;
+}
+#cc2 { 
+	margin-left : 20px;
+}
+</style>
+<body>
+<h1> heel </h1>
+<input type='button' id='play' value='play'></input>
+<canvas id="cc" width="800" height="800"style="border:1px solid #000000; float:left;">
+</canvas>
+<canvas id="cc2" width="400" height="400"style="border:1px solid #000000; float:left;">
+</canvas>
+</body>
+<script>
+
+$(document).ready(function(){
+
+	$('#play').bind('click',function(){
+		console.log(canvas.toJSON())
+		var newCanvas = new fabric.Canvas('cc2');
+		newCanvas.loadFromJSON(canvas.toJSON(), function(){
+			var zoomInOrOut = -1
+			function pinToCenter(obj){
+				
+				var canvasCenterPoint = new fabric.Point(newCanvas.getCenter().left,newCanvas.getCenter().top)
+				var objectCenterPoint = obj.getCenterPoint();
+				newCanvas.zoomToPoint(new fabric.Point(newCanvas.getCenter().left,newCanvas.getCenter().top), 1)
+				newCanvas.absolutePan(objectCenterPoint.subtract(canvasCenterPoint))
+				setTimeout(function(){
+					if(zoomInOrOut == -1){
+						newCanvas.zoomToPoint(new fabric.Point(newCanvas.getCenter().left,newCanvas.getCenter().top), 1.2)
+						zoomInOrOut = 1
+					}else{
+						newCanvas.zoomToPoint(new fabric.Point(newCanvas.getCenter().left,newCanvas.getCenter().top), 0.8)
+						zoomInOrOut = -1
+					}
+				}, 1000)
+				
+				//console.log(obj.getCenterPoint())
+				
+			}
+			var toFocusObjectList = []
+			
+			for (var i = 0, len = newCanvas._objects.length; i < len; i++) {
+				toFocusObjectList.push(newCanvas._objects[i])
+				
+			}
+			
+			var interval = setInterval(function(){ 
+				var toFocusObject = toFocusObjectList.splice(0,1)
+				if(toFocusObject.length == 0){
+					 clearTimeout(interval)
+				}else{
+					pinToCenter(toFocusObject[0])
+				}
+			}, 3000);
+
+		})
+	})
+})
+
+var canvas = new fabric.Canvas('cc');
+var canvasIntialPoint = new fabric.Point(0,0)
+var canvasDxPoint = new fabric.Point(0,0)
+var z = 1000
+var x = 0
+canvas.on('before:render', function(){
+	
+	//camera.moveTo(x, 0)
+	//camera.begin();
+	//z = z + 10
+	
+	console.log('rendering beign ')
+})
+canvas.on('after:render' , function(){
+	console.log('rending done')
+	//camera.end();
+})
+/*
+var z = 1
+document.getElementsByClassName("canvas-container")[0].addEventListener("mousewheel",function(event){
+console.log('zoomin')
+	var zoomPoint = new fabric.Point(new fabric.Point(canvas.getCenter().left,canvas.getCenter().top))
+	z = z + 1
+	canvas.zoomToPoint(zoomPoint, z)
+    return false;
+}, false);
+*/
+var isMouseDown = false
+var pX = 0
+var pY = 0
+console.log(canvas)
+
+canvas.on('mouse:down', function(a){
+	//var zoomPoint = new fabric.Point(a.e.clientX, a.e.clientY)
+	//canvas.zoomToPoint(zoomPoint, 1.5)
+	var anyElActive = false
+  var x = a.e.x;
+  var y = a.e.y;
+
+  
+  x -= a.e.offsetX;
+  y -= a.e.offsetY;
+  
+  
+	console.log(a)
+	console.log(new fabric.Point(x, y))
+	for (var i = 0, len = this._objects.length; i < len; i++) {
+		if(canvas._objects[i].active){
+			anyElActive = true;
+			break;
+		}
+    }
+	pX = a.e.clientX
+	pY = a.e.clientY
+	console.log('mouse down' , a.e.clientX, a.e.clientY)
+	
+	console.log('fater' , text2.getCenterPoint())
+	if(!anyElActive){
+		isMouseDown = true
+	}
+})
+
+canvas.on('mouse:up' , function(a){
+	console.log('mouse up' )
+	if(isMouseDown == true){
+		canvasIntialPoint = canvasIntialPoint.add(canvasDxPoint)
+	}
+	isMouseDown = false
+})
+
+canvas.on('mouse:out' , function(a){
+	console.log('mouse out' )
+	isMouseDown = false
+})
+
+canvas.on('mouse:move' , function(a){
+	//console.log('mouse moving' )
+	if(isMouseDown){
+		var dX = pX - a.e.clientX
+		var dY = pY - a.e.clientY
+		console.log('mouse is moving' , a.e.clientX, a.e.clientY)
+		
+		var dxPoint = new fabric.Point(dX,dY)
+		var toMove = canvasIntialPoint.add(dxPoint)
+		console.log('difference Point dx, dy', dxPoint)
+		console.log('initial Point ' , toMove)
+		canvasDxPoint = dxPoint
+		canvas.absolutePan(toMove)
+
+	}
+})
+
+
+var camera = new Camera(canvas.getContext('2d'), {
+
+});
+
+console.log(camera)
+
+var cameraBoundary = new fabric.Rect({
+  left: 0,
+  top: 0,
+  height : 200,
+  width : 200,
+  borderColor  : 'red'
+})
+
+cameraBoundary.on('moving', function(){
+	/*var point = new fabric.Point(x,0)
+	canvas.absolutePan(point)
+	x = x + 1*/
+})
+
+function pinToCenter(){
+//canvas.zoomToPoint(new fabric.Point(canvas.getCenter().left,canvas.getCenter().top), 1/.5)
+var canvasCenterPoint = new fabric.Point(canvas.getCenter().left,canvas.getCenter().top)
+var objectCenterPoint = this.getCenterPoint();
+canvas.absolutePan(objectCenterPoint.subtract(canvasCenterPoint))
+
+
+
+/*
+var centerPoint = new fabric.Point(canvas.getCenter().left, canvas.getCenter().top);
+var objectCenterPoint = this.getCenterPoint();
+console.log('objectCenterPoint', objectCenterPoint)
+var objectRelativePoint = objectCenterPoint.subtract(canvasOriginPoint)
+console.log('objectRelativePoint', objectRelativePoint)
+var deltaPin = centerPoint.subtract(objectRelativePoint)
+console.log('deltaPin', deltaPin)
+	canvas.absolutePan(deltaPin)
+	canvasOriginPoint = canvasOriginPoint.add(deltaPin)
+	console.log('canvasOriginPoint' , canvasOriginPoint)*/
+}
+
+cameraBoundary.on('selected',function(){
+ console.log('before' , this.getCenterPoint())
+	//return pinToCenter.call(this)
+})
+
+var text1 = new fabric.Text(
+"Hemant",
+{
+  left: 100,
+  top: 100,
+  fontFamily: 'Impact',
+  fill   : 'rgb(0,200,0)',
+  fontSize: 80
+});
+var text2 = new fabric.Text(
+"Sachdeva",
+{
+  left: 200,
+  top: 0,
+   fontFamily: 'Impact',
+	fill : '#c3bfbf',
+   fontSize: 80
+
+});
+text1.on('selected',function(){
+	 console.log('before' , this.getCenterPoint())
+	//console.log(canvas.getCenter())
+	//return pinToCenter.call(this)
+})
+
+text2.on('selected',function(){
+	 //console.log('before' , this.getCenterPoint())
+	//console.log(canvas.getCenter())
+	//return pinToCenter.call(this)
+})
+
+
+canvas.add(text1)
+canvas.add(text2)
+canvas.add(cameraBoundary);
+
+//canvas.zoomToPoint(new fabric.Point(canvas.getCenter().left,canvas.getCenter().top), 1.5)
+text1.animate('angle', 90, {
+  duration: 2000,
+  onChange: canvas.renderAll.bind(canvas)
+});
+var zoom = 1
+setInterval(function(){ 
+    //zoom = zoom + 0.1
+	//canvas.zoomToPoint(new fabric.Point(canvas.getCenter().left,canvas.getCenter().top), zoom)
+}, 3000);
+
+
+</script>
+</html>
