@@ -21,7 +21,9 @@ float : left;
 </canvas>
 </body>
 <script>
-
+/**
+* Note : Use : a = fabric.util.ease.easeOutBounce(timeInMillSec, startValue, endValue, totalDurationInMillSec) to seek animation framme at particular time. 
+**/
 $(document).ready(function(){
 
 	$('#play').bind('click',function(){
@@ -246,7 +248,12 @@ canvas.add(cameraBoundary);
 //canvas.zoomToPoint(new fabric.Point(canvas.getCenter().left,canvas.getCenter().top), 1.5)
 text1.animate('angle', 90, {
   duration: 2000,
-  onChange: canvas.renderAll.bind(canvas)
+  onChange: (function(){
+		//return function(){console.log(text1.angle  + "")}
+		return canvas.renderAll.bind(canvas)
+		  
+	})(),
+  easing : fabric.util.ease.easeOutBounce
 });
 var zoom = 1
 setInterval(function(){ 
