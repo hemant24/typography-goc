@@ -9,24 +9,43 @@ var canvas = new fabric.Canvas('cc');
 var animator = new motionText.Animator(canvas);
 var drawingArea = new motionText.DrawingArea(canvas, "#drawingArea")
 
-var text1 = new fabric.Text(
-"Hemant",
-{
+
+animator.add( new motionText.AnimateObject(new fabric.Text(
+"Hemant", {
   left: 120,
   top: 100,
   fontFamily: 'Impact',
   fill   : 'rgb(0,200,0)',
   fontSize: 80
-});
+}))
+.keyframe(100, 200, {angle : '90'},fabric.util.ease.easeOutBounce)
+.keyframe(300, 400, {left : '300'},fabric.util.ease.easeOutBounce)
+.keyframe(500, 800, {angle : '0'},fabric.util.ease.easeOutBounce)
+.keyframe(800, 900, {left : '320'},fabric.util.ease.easeOutBounce)
+);
 
-var aObj1 = new motionText.AnimateObject();
+animator.add(  new motionText.AnimateObject(new fabric.Text(
+"Sachdeva",
+{
+  left: 100,
+  top: -100,
+   fontFamily: 'Impact',
+	fill : '#c3bfbf',
+   fontSize: 80
+
+}))
+.keyframe(100, 300, {top : 100},fabric.util.ease.easeOutBounce)
+.keyframe(800, 1100, {left : 0},fabric.util.ease.easeOutBounce)
+)
+;
+
+/*
 aObj1.from = 0
 aObj1.to = 2000
-aObj1.object = text1
 aObj1.endProperties = {angle : 90}
-
-animator.add(aObj1);
-
+*/
+//animator.add(aObj1);
+/*
 var text2 = new fabric.Text(
 "Sachdeva",
 {
@@ -50,8 +69,40 @@ aObj3.to = 3000
 aObj3.object = text2
 aObj3.endProperties = {fontSize : 40}
 
-animator.add(aObj2);
-animator.add(aObj3);
+//var cameraFrame = new fabric.Path('M 0 0 L 0 100  ');
+//cameraFrame.set({ fill: null, stroke: 'green', opacity: 0.5 });
+
+
+var cameraFrame = new fabric.Rect({
+  left: 100,
+  top: 100,
+  fill: null,
+  stroke: "red",
+  strokeWidth: 3,
+  width: 300,
+  height: 300
+});
+cameraFrame.lockScalingX = true;
+cameraFrame.lockScalingY = true;
+cameraFrame.lockRotation = true;
+
+console.log('cameraFrame' , cameraFrame)
+var aObj4 = new motionText.AnimateObject();
+aObj4.object = cameraFrame;
+
+//animator.add(aObj2);
+//animator.add(aObj3);
+//animator.add(aObj4)
+*/
+/*
+canvas.sendBackwards(myObject)
+canvas.sendToBack(myObject)
+canvas.bringForward(myObject)
+canvas.bringToFront(myObject)
+
+//canvas.preserveObjectStacking = true
+canvas.sendToBack(cameraFrame)*/
+
 animator.play();
 	
 	

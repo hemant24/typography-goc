@@ -2371,6 +2371,7 @@ if (typeof console !== 'undefined') {
   function animate(options) {
 
     requestAnimFrame(function(timestamp) {
+	  console.log('timestamp', timestamp)
       options || (options = { });
 
       var start = timestamp || +new Date(),
@@ -2382,12 +2383,13 @@ if (typeof console !== 'undefined') {
           startValue = 'startValue' in options ? options.startValue : 0,
           endValue = 'endValue' in options ? options.endValue : 100,
           byValue = options.byValue || endValue - startValue;
-
+		console.log('start', start)
       options.onStart && options.onStart();
 
       (function tick(ticktime) {
         time = ticktime || +new Date();
         var currentTime = time > finish ? duration : (time - start);
+		console.log('currenttime' , currentTime)
         if (abort()) {
           options.onComplete && options.onComplete();
           return;
@@ -13613,7 +13615,6 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
     fabric.util.animate({
       startValue: options.from,
       endValue: to,
-      byValue: options.by,
       easing: options.easing,
       duration: options.duration,
       abort: options.abort && function() {
@@ -13632,11 +13633,13 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
         options.onChange && options.onChange();
       },
       onComplete: function() {
+		console.log('oncomplete called', options)
         if (skipCallbacks) {
           return;
         }
 
         _this.setCoords();
+		console.log('going to call oncomplete')
         options.onComplete && options.onComplete();
       }
     });

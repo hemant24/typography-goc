@@ -9,7 +9,7 @@ var motionText = motionText || {};
 		this._objs = [];
 		console.log(canvas)
 		this.canvas = canvas;
-		this.playLength = 3000;
+		this.playLength = 4000;
 	}
 	var now = null;
 	Animator.prototype.add = function(obj){
@@ -25,8 +25,11 @@ var motionText = motionText || {};
 		var ds = ( new Date()) - now
 		for(var i in this._objs){
 			var obj = this._objs[i]
+			console.log(ds)
 			if(obj.timeToAnimate(ds)){
-				obj.start();
+				console.log('yes animate object time to animate', obj)
+				obj.start(ds);
+				console.log('after start')
 			}
 		}
 		//console.log(this.renderFrame)
