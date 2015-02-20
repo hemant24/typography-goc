@@ -9,71 +9,25 @@ var canvas = new fabric.Canvas('cc');
 var animator = new motionText.Animator(canvas);
 var drawingArea = new motionText.DrawingArea(canvas, "#drawingArea")
 
-
-animator.add( new motionText.AnimateObject(new fabric.Text(
+var aText = new fabric.AText(
 "Hemant", {
-  left: 120,
-  top: 100,
+  left: 200,
+  top: -200,
   fontFamily: 'Impact',
   fill   : 'rgb(0,200,0)',
+  angle : 90,
   fontSize: 80
-}))
-.keyframe(100, 200, {angle : '90'},fabric.util.ease.easeOutBounce)
-.keyframe(300, 400, {left : '300'},fabric.util.ease.easeOutBounce)
+}).keyframe(100, 500, {top : '130'},fabric.util.ease.easeOutBounce)
 .keyframe(500, 800, {angle : '0'},fabric.util.ease.easeOutBounce)
-.keyframe(800, 900, {left : '320'},fabric.util.ease.easeOutBounce)
-);
+.keyframe(1600, 1800, {fontSize : '800',opacity : 0, top: 500, left : -500},fabric.util.ease.easeOutBounce)
+animator.add(aText)
+aText.saveToStartState();
+aText.on('selected' , function(){
 
-animator.add(  new motionText.AnimateObject(new fabric.Text(
-"Sachdeva",
-{
-  left: 100,
-  top: -100,
-   fontFamily: 'Impact',
-	fill : '#c3bfbf',
-   fontSize: 80
+	console.log(this)
+})
 
-}))
-.keyframe(100, 300, {top : 100},fabric.util.ease.easeOutBounce)
-.keyframe(800, 1100, {left : 0},fabric.util.ease.easeOutBounce)
-)
-;
-
-/*
-aObj1.from = 0
-aObj1.to = 2000
-aObj1.endProperties = {angle : 90}
-*/
-//animator.add(aObj1);
-/*
-var text2 = new fabric.Text(
-"Sachdeva",
-{
-  left: 100,
-  top: -100,
-   fontFamily: 'Impact',
-	fill : '#c3bfbf',
-   fontSize: 80
-
-});
-
-var aObj2 = new motionText.AnimateObject();
-aObj2.from = 1000
-aObj2.to = 2000
-aObj2.object = text2
-aObj2.endProperties = {top: 80}
-
-var aObj3 = new motionText.AnimateObject();
-aObj3.from = 2000
-aObj3.to = 3000
-aObj3.object = text2
-aObj3.endProperties = {fontSize : 40}
-
-//var cameraFrame = new fabric.Path('M 0 0 L 0 100  ');
-//cameraFrame.set({ fill: null, stroke: 'green', opacity: 0.5 });
-
-
-var cameraFrame = new fabric.Rect({
+var camera = new fabric.ARect({
   left: 100,
   top: 100,
   fill: null,
@@ -81,27 +35,13 @@ var cameraFrame = new fabric.Rect({
   strokeWidth: 3,
   width: 300,
   height: 300
-});
-cameraFrame.lockScalingX = true;
-cameraFrame.lockScalingY = true;
-cameraFrame.lockRotation = true;
+}).keyframe(800, 900, {left : 170});
+camera.lockScalingX = true;
+camera.lockScalingY = true;
+camera.lockRotation = true;
+camera.saveToStartState();
 
-console.log('cameraFrame' , cameraFrame)
-var aObj4 = new motionText.AnimateObject();
-aObj4.object = cameraFrame;
-
-//animator.add(aObj2);
-//animator.add(aObj3);
-//animator.add(aObj4)
-*/
-/*
-canvas.sendBackwards(myObject)
-canvas.sendToBack(myObject)
-canvas.bringForward(myObject)
-canvas.bringToFront(myObject)
-
-//canvas.preserveObjectStacking = true
-canvas.sendToBack(cameraFrame)*/
+animator.add(camera)
 
 animator.play();
 	

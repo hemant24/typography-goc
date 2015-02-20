@@ -13,10 +13,30 @@ var motionText = motionText || {};
 	Previewer['preview'] = function(canvas){
 		//$('#previewArea').modal({})
 		previewCanvas = new fabric.Canvas('previewCanvas');
-		previewCanvas.loadFromJSON(canvas.toJSON(), function(){
-			previewCanvas.renderAll();
-			startAnimation();
-		})
+		var animator = new motionText.Animator(previewCanvas, true);
+		var initialStateObjects = []
+		console.log('canvas objects' , canvas.getObjects())
+		initialStateObjects = canvas.getObjects().map(function(instance){
+			var clonnedInstance = fabric.util.object.clone(instance)
+			var clonnedObject = clonnedInstance.toObject()
+			//console.log('clonnedObject', clonnedObject)
+			//console.log('clonnedInstance.stateProperties', clonnedInstance.stateProperties)
+			fabric.util.populateWithProperties(clonnedInstance.startState, clonnedObject , clonnedInstance.stateProperties)
+			return clonnedObject
+		}, canvas)
+		
+		console.log('initiating canvas with' , {background : '' , objects : initialStateObjects})
+
+		previewCanvas.loadFromJSON({background : '' , objects : initialStateObjects}, function(){
+			console.log('called loadFromJSON complete')
+			console.log(animator)
+			//previewCanvas.setZoom(2)
+			animator.play()
+			//previewCanvas.renderAll();
+			//startAnimation();
+		}, function(o, object){
+			animator.add(object)
+		} )
 	}
 	
 	var startAnimation = function(){

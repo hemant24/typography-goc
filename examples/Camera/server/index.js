@@ -1,9 +1,9 @@
 var fs = require('fs'),
-    fabric = require('fabric').fabric,
-   Camera = require('./camera')
+    fabric = require('fabric').fabric;
+
 
 var canvas = fabric.createCanvasForNode(512, 378);
-var camera = new Camera(canvas.getContext('2d'))
+
 
 var redish = new fabric.Color('#f55');
 // create a rectangle object
