@@ -1,0 +1,62 @@
+<html>
+<head>
+    
+    <title>Common Code Template</title>
+    <style type="text/css">
+	/**
+	 *	Basic Layout Theme
+	 * 
+	 *	This theme uses the default layout class-names for all classes
+	 *	Add any 'custom class-names', from options: paneClass, resizerClass, togglerClass
+	 */
+
+	.ui-layout-pane { /* all 'panes' */ 
+		background: #FFF; 
+		border: 1px solid #BBB; 
+		padding: 10px; 
+		overflow: auto;
+	} 
+
+	.ui-layout-resizer { /* all 'resizer-bars' */ 
+		background: #DDD; 
+	} 
+
+	.ui-layout-toggler { /* all 'toggler-buttons' */ 
+		background: #AAA; 
+	} 
+
+
+	</style>
+
+  </head>
+
+<body>
+<div class="ui-layout-north" >
+	<input type='button' id='add' value='Add'></input>
+			<input type='button' id='preview' value='Preview'></input>
+
+</div>
+
+<!-- allowOverflow auto-attached by option: west__showOverflowOnHover = true -->
+<div class="ui-layout-west">
+	This is the west pane, closable, slidable and resizable
+</div>
+
+<div class="ui-layout-south">
+	This is the south pane, closable, slidable and resizable &nbsp;
+</div>
+
+<div class="ui-layout-east">
+	 <canvas id="previewCanvas" width="600" height="600" style="border:1px solid #000000;" >
+	 </canvas>
+</div>
+
+<div class="ui-layout-center">
+	<div id="drawingArea"  style="height : 550; border:1px solid #000000;">
+		<canvas id="cc" >
+		</canvas>
+	</div>
+</div>
+	
+<script data-main="js/app.js" src="js/require.js"></script>
+</body>
