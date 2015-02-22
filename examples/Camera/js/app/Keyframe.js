@@ -8,6 +8,7 @@ define(function(require) {
 		this.endAt = endAt || 0;
 		this.properties = properties || {};
 		this.easing = easing || '';
+		this.easeFn = null; //will get exported 
 		this.running = false;
 	}
 	

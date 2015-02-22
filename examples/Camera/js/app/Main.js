@@ -9,7 +9,7 @@ define(function(require) {
 		var Animator = require('app/Animator')
 		var DrawingArea = require('app/DrawingArea')
 		var Previewer = require('app/Previewer')
-		console.log(DrawingArea)
+		
 		
 		
 		
@@ -33,9 +33,9 @@ define(function(require) {
 			  fill   : 'rgb(0,200,0)',
 			  angle : 90,
 			  fontSize: 80
-		}).keyframe(100, 500, {top : '130'},fabric.util.ease.easeOutBounce)
-		.keyframe(500, 800, {angle : '0'},fabric.util.ease.easeOutBounce)
-		.keyframe(1600, 1800, {fontSize : '800',opacity : 0, top: 500, left : -500},fabric.util.ease.easeOutBounce)
+		}).keyframe(100, 400, {top : {from : '-200', to : '130'}},fabric.util.ease.easeOutBounce)
+		.keyframe(500, 800, {angle : {from : '90', to : '0'}},fabric.util.ease.easeOutBounce)
+		.keyframe(1600,3000, { fontSize : {from : 80 , to :  '800'},opacity : {from : 1, to :0}, top: {from : 180, to : 500}, left: { from : 200, to : -500}}, fabric.util.ease.easeOutBounce)
 		
 		animator.add(aText)
 		aText.saveToStartState();
@@ -52,18 +52,24 @@ define(function(require) {
 		  strokeWidth: 3,
 		  width: 300,
 		  height: 300
-		}).keyframe(800, 900, {left : 170});
+		})//.keyframe(800, 900, {left : 170});
 		camera.lockScalingX = true;
 		camera.lockScalingY = true;
 		camera.lockRotation = true;
 		camera.saveToStartState();
 
 		animator.add(camera)
-
-		animator.play();
+		
+		
+		//animator.play();
+		
+		$("#seekBtn").click(function(){
+			animator.seek( $("#seekTime").val())
+			
+		})
 		
 		$("#preview").click(function(){
-			
+			console.log(JSON.stringify(Previewer.canvasToJSON(canvas)))
 			Previewer.preview(Previewer.canvasToJSON(canvas))
 		})
 

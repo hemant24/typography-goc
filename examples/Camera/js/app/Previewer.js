@@ -29,19 +29,22 @@ define(function(require) {
 	}
 	
 	Previewer['preview'] = function(canvasJSON){
-	
-		console.log('initiating canvas with' , canvasJSON)
+		var animateFor = 'preview'
+		//console.log('initiating canvas with' , canvasJSON)
+		console.log('evn is ' , env)
 		if(env == 'node'){
-			previewCanvas = fabric.createCanvasForNode(600, 600);
+			animateFor = 'server';
+			previewCanvas = fabric.createCanvasForNode(1500, 1500);
 		}else{
 			previewCanvas = new fabric.Canvas('previewCanvas');
 		}
-		var animator = new Animator(previewCanvas, true);
+		var animator = new Animator(previewCanvas, animateFor);
 		previewCanvas.loadFromJSON(canvasJSON, function(){
-			console.log('called loadFromJSON complete')
-			console.log(animator)
+			//console.log('called loadFromJSON complete')
+			//console.log(animator)
 			//previewCanvas.setZoom(2)
 			animator.play()
+			//animator.seek( $("#seekTime").val())
 			//previewCanvas.renderAll();
 			//startAnimation();
 		}, function(o, object){
