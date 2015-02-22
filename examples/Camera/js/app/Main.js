@@ -4,6 +4,8 @@ define(function(require) {
 		require('jquery.ui.all')
 		require('jquery')
 		require('app/AObjects')
+		require('app/Audio')
+
 
         var fabric = require('fabric')
 		var Animator = require('app/Animator')
@@ -72,6 +74,11 @@ define(function(require) {
 			console.log(JSON.stringify(Previewer.canvasToJSON(canvas)))
 			Previewer.preview(Previewer.canvasToJSON(canvas))
 		})
+		
+		
+		
+		
+		
 
 
         
