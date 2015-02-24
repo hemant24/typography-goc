@@ -7,11 +7,11 @@ define(function(require) {
 	var Sequence = require('./Sequence')
 	var fs = require('fs')
 	
-	var Animator = function(canvas, animateFor){
+	var Animator = function(canvas, animateFor, playLength){
 		this._objs = [];
 //		console.log(canvas)
 		this.canvas = canvas;
-		this.playLength = 3000;
+		this.playLength = playLength || 3000;
 		//this.isPreview = isPreview,
 		this.animateFor = animateFor || 'drawing';
 		this.fps = 25;
@@ -160,7 +160,7 @@ define(function(require) {
                           };
 						  
 	function pinToCenter(obj){
-		var scaleLevel = 5
+		var scaleLevel = 1
 		this.canvas.setZoom(scaleLevel)
 		//obj.setCoords() why it is not working
 		var canvasCenterPoint = new fabric.Point(this.canvas.getCenter().left, this.canvas.getCenter().top)

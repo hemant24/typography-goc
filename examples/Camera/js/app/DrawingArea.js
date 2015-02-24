@@ -30,8 +30,6 @@ define(function(require) {
 			  y -= a.e.offsetY;
 			  
 		  
-			console.log(a)
-			console.log(new fabric.Point(x, y))
 			for (var i = 0, len = this.canvas._objects.length; i < len; i++) {
 				if(this.canvas._objects[i].active){
 					anyElActive = true;
@@ -40,7 +38,7 @@ define(function(require) {
 			}
 			pX = a.e.clientX
 			pY = a.e.clientY
-			console.log('mouse down' , a.e.clientX, a.e.clientY)
+			//console.log('mouse down' , a.e.clientX, a.e.clientY)
 			
 			//console.log('fater' , text2.getCenterPoint())
 			if(!anyElActive){
@@ -49,7 +47,7 @@ define(function(require) {
 		}.bind(this))
 
 		this.canvas.on('mouse:up' , function(a){
-			console.log('mouse up' )
+			//console.log('mouse up' )
 			if(isMouseDown == true){
 				canvasIntialPoint = canvasIntialPoint.add(canvasDxPoint)
 			}
@@ -57,7 +55,7 @@ define(function(require) {
 		})
 		
 		this.canvas.on('mouse:out' , function(a){
-			console.log('mouse out' )
+			//console.log('mouse out' )
 			isMouseDown = false
 		})
 

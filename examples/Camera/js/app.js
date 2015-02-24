@@ -13,7 +13,26 @@ requirejs.config({
 	shim: {
 		'fabric': {
             exports: 'fabric'
-        }
+        },
+		'jquery.layout' : {
+			deps : ['jquery', 'jquery.ui.all']
+		},
+		'jquery.ui.all' : {
+			deps : ['jquery']
+		},
+		'jquery.layout.resizePaneAccordions' : {
+			deps : ['jquery','jquery.layout']
+		},
+		'underscore' : {
+			exports : '_'
+		},
+		'backbone' : {
+			deps : ['underscore']
+		},
+		'backbone.epoxy' : {
+			deps : ['backbone', 'jquery']
+		}
+		
 	}
 });
 

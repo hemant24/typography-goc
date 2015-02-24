@@ -4,6 +4,7 @@ if (typeof define !== 'function') {
 }
 define(function(require) {
 var WaveSurfer = require('wavesurfer');
+require('drawer')
 'use strict';
 
 /* Regions manager */
@@ -88,7 +89,6 @@ WaveSurfer.Region = {
         this.loop = Boolean(params.loop);
         this.color = params.color || 'rgba(0, 0, 0, 0.1)';
         this.data = params.data || {};
-
         this.bindInOut();
         this.render();
 
@@ -210,6 +210,7 @@ WaveSurfer.Region = {
           this.end = dur;
           this.start = dur - seconds;
         }
+		
         this.style(this.element, {
             left: ~~(this.start / dur * width) + 'px',
             width: ~~((this.end / dur - this.start / dur) * width) + 'px',
@@ -379,6 +380,7 @@ WaveSurfer.initRegions = function () {
 };
 
 WaveSurfer.addRegion = function (options) {
+	console.log('inside add reginon')
     this.initRegions();
     return this.regions.add(options);
 };

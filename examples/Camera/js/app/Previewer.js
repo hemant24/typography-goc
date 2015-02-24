@@ -20,15 +20,15 @@ define(function(require) {
 		initialStateObjects = canvas.getObjects().map(function(instance){
 			var clonnedInstance = fabric.util.object.clone(instance)
 			var clonnedObject = clonnedInstance.toObject()
-			console.log('clonnedObject', clonnedObject)
-			console.log('clonnedInstance.stateProperties', clonnedInstance.stateProperties)
+			//console.log('clonnedObject', clonnedObject)
+			//console.log('clonnedInstance.stateProperties', clonnedInstance.stateProperties)
 			fabric.util.populateWithProperties(clonnedInstance.startState, clonnedObject , clonnedInstance.stateProperties)
 			return clonnedObject
 		}, canvas)
 		return {background : '' , objects : initialStateObjects}
 	}
 	
-	Previewer['preview'] = function(canvasJSON){
+	Previewer['preview'] = function(canvasJSON, playLength){
 		var animateFor = 'preview'
 		//console.log('initiating canvas with' , canvasJSON)
 		console.log('evn is ' , env)
@@ -38,7 +38,7 @@ define(function(require) {
 		}else{
 			previewCanvas = new fabric.Canvas('previewCanvas');
 		}
-		var animator = new Animator(previewCanvas, animateFor);
+		var animator = new Animator(previewCanvas, animateFor, playLength);
 		previewCanvas.loadFromJSON(canvasJSON, function(){
 			//console.log('called loadFromJSON complete')
 			//console.log(animator)
