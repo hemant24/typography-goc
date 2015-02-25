@@ -7,6 +7,7 @@ define(function(require) {
 
 		require('backbone')
 		var AudioTrack = require('app/Audio')
+		var Properties = require('app/Properties')
 		
 		
 		var AnimateObjectView = require('app/view/AnimateObjectView')
@@ -62,28 +63,23 @@ define(function(require) {
 		
 		
 		var canvas = new fabric.Canvas('cc');
-		var animator = new Animator(canvas,'drawing', 14400);
+		var animator = new Animator(canvas,'drawing', 3000);
 		var drawingArea = new DrawingArea(canvas, "#drawingArea")
 		var audioTrack = new AudioTrack('to_add', animator)
+		//var aText = new fabric.AText("Hemant",new Properties())
+		//animator.add(aText)
 		/*
 		var aText = new fabric.AText(
-			"Hemant", {
-			  left: 200,
-			  top: -200,
-			  fontFamily: 'Impact',
-			  fill   : 'rgb(0,200,0)',
-			  angle : 90,
-			  fontSize: 80
-		}).keyframe(100, 400, {top : {from : '-200', to : '130'}},fabric.util.ease.easeOutBounce)
-		.keyframe(500, 800, {angle : {from : '90', to : '0'}},fabric.util.ease.easeOutBounce)
-		.keyframe(1600,3000, { fontSize : {from : 80 , to :  '800'},opacity : {from : 1, to :0}, top: {from : 180, to : 500}, left: { from : 200, to : -500}}, fabric.util.ease.easeOutBounce)
+			"Hemant", new Properties()).keyframe(100, 400, new Properties({top : '-200'}), new Properties({top : '100'}),fabric.util.ease.easeOutBounce)
+		//.keyframe(500, 800, {angle : {from : '90', to : '0'}},fabric.util.ease.easeOutBounce)
+		//.keyframe(1600,3000, { fontSize : {from : 80 , to :  '800'},opacity : {from : 1, to :0}, top: {from : 180, to : 500}, left: { from : 200, to : -500}}, fabric.util.ease.easeOutBounce)
 		
 		animator.add(aText)
-		aText.saveToStartState();
+		//aText.saveToStartState();
 		aText.on('selected' , function(){
 			console.log(this)
-		})*/
-
+		})
+animator.play()*/
 			
 		var camera = new fabric.ARect({
 		  top: 100,
@@ -117,14 +113,17 @@ define(function(require) {
 			var lyrics = $("#lyrics").val();
 			lyrics = lyrics.replace(/[ \t\r\n]+/g," ");
 			var wordList = lyrics.split(" ");
-			var eachWordDuration = animator.playLength/wordList.length
-			var eachWordEnterStartEndDt = eachWordDuration * .2
+			
+			var playLength = parseInt(animator.playLength)
+			console.log('playlength', playLength)
+			var eachWordDuration = parseInt(playLength/wordList.length)
+			var eachWordEnterStartEndDt = parseInt(eachWordDuration * .2)
 			console.log('eachWordDuration', eachWordDuration)
 			console.log('eachWordEnterStartEndDt', eachWordEnterStartEndDt)
 			var timeElapsed = 0
 			for(var idx in wordList){
 				var word = wordList[idx]
-				var text = new fabric.AText(word)
+				var text = new fabric.AText(word, new Properties())
 				text.on('selected' , function(){
 					console.log(this)
 				})
@@ -135,15 +134,18 @@ define(function(require) {
 				var leavingEndTime = timeElapsed+eachWordDuration
 				
 				animator.add(text
-					.keyframe(enteringStartTime, enteringEndTime, 
-						{		top : {from : '-200', to : '250'}
-							,	left : {from : '0' , to :'150'}
-						},fabric.util.ease.easeOutBounce)
-					.keyframe(leavingStartTime, leavingEndTime, 
-						{	top : {from : '250', to : '400'}
-							//, opacity : {from : 1, to :0}
-							
-						},fabric.util.ease.easeOutBounce)
+					.keyframe(enteringStartTime, enteringEndTime
+						,	new Properties({top : '-200', left : '0'})
+						,	new Properties({top : '250', left : '150'})
+						,	fabric.util.ease.easeOutBounce)
+					.keyframe(enteringEndTime, leavingStartTime
+						,	new Properties({top : '250', left : '150'})
+						,	new Properties({top : '250', left : '150'})
+						)
+					.keyframe(leavingStartTime, leavingEndTime
+						, 	new Properties({top : '250', left : '150'})
+						,	new Properties({top : '400', left : '150'})
+						,	fabric.util.ease.easeOutBounce)
 				)
 				timeElapsed = timeElapsed + eachWordDuration;
 				audioTrack.addFramesRegion({

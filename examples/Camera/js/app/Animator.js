@@ -6,6 +6,7 @@ define(function(require) {
 	var env = require('./Env')
 	var Sequence = require('./Sequence')
 	var fs = require('fs')
+	var Properties = require('./Properties')
 	
 	var Animator = function(canvas, animateFor, playLength){
 		this._objs = [];
@@ -42,6 +43,7 @@ define(function(require) {
 			//console.log(rect)
 			stream.pipe(out, {end : false});
 			stream.on('end', function(){
+					//stream.unpipe(out);
 					out.end();
 					console.log('frame ' + frameNumber + 'created')
 					if( frameNumber != null){
@@ -56,10 +58,29 @@ define(function(require) {
 	}
 	Animator.prototype.play = function(){
 		if(this.animateFor == 'server'){
-			var sequence = new Sequence(0, this.playLength, 1000/this.fps);
-			//var sequence = new Sequence(200, 202, 1);
-			
+			console.log(this.playLength)
+			var sequence = new Sequence(0, 1*60*1000, 1000/this.fps);
+			//var sequence = new Sequence(0, 202, 30);
 			_createFrames.call(this, sequence)
+			/*out = fs.createWriteStream(__dirname + '/output/' + '/helloworld.png');
+var text = new fabric.AText('Hello world', new Properties());
+this.canvas.add(text);
+this.seek(200);
+var stream = this.canvas.createPNGStream();
+stream.on('data', function(chunk) {
+  out.write(chunk);
+});*/
+
+			/*
+			this.canvas.add(new fabric.Text("Hemant"))
+			this.canvas.renderAll()
+			var stream = this.canvas.createPNGStream()
+			
+			var out = fs.createWriteStream(__dirname + '/output/frame-test.png');
+			stream.on('data', function(chunk) {
+				out.write(chunk);
+			})*/
+			//_createFrames.call(this, sequence)
 			
 			/*var ds = 1000/this.fps;
 			var i = 300
@@ -88,12 +109,14 @@ define(function(require) {
 		//this._objs[0].start()
 	}
 	Animator.prototype.seek = function(seekTime){
+		console.log('seek time ', seekTime)
 		console.log('animateFor', this.animateFor)
 		for(var i in this._objs){
 			var obj = this._objs[i];
 			obj.updateCoords(seekTime);
 			_adjustCamera.call(this,obj);
 		}
+		//console.log(this.canvas)
 		this.canvas.renderAll();
 	}
 	var _saveFrame = function(frameNumber){
@@ -160,7 +183,7 @@ define(function(require) {
                           };
 						  
 	function pinToCenter(obj){
-		var scaleLevel = 1
+		var scaleLevel = 2
 		this.canvas.setZoom(scaleLevel)
 		//obj.setCoords() why it is not working
 		var canvasCenterPoint = new fabric.Point(this.canvas.getCenter().left, this.canvas.getCenter().top)

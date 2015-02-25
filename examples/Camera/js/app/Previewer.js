@@ -34,11 +34,12 @@ define(function(require) {
 		console.log('evn is ' , env)
 		if(env == 'node'){
 			animateFor = 'server';
-			previewCanvas = fabric.createCanvasForNode(1500, 1500);
+			previewCanvas = fabric.createCanvasForNode(600, 600);
 		}else{
 			previewCanvas = new fabric.Canvas('previewCanvas');
 		}
 		var animator = new Animator(previewCanvas, animateFor, playLength);
+		//animator.play()
 		previewCanvas.loadFromJSON(canvasJSON, function(){
 			//console.log('called loadFromJSON complete')
 			//console.log(animator)

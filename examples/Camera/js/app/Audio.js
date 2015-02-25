@@ -33,21 +33,33 @@ define(function(require) {
 		this.wavesurfer.load('assets/demo.mp3');
 	}
 	AudioTrack.prototype.addFramesRegion = function(option){
-		option.start = option.start / 1000;
-		option.end = option.end / 1000;
+		option.start = option.start;
+		option.end = option.end ;
 		this.wavesurfer.addFramesRegion(option)
 	}
 	
 	var _bindEvents = function(){
 		this.wavesurfer.on('frames-region-click', function(region){
 			console.log('region clicked on ', region)
+			this.animator.canvas.setActiveObject(region.data)
+		}.bind(this))
+		
+		this.wavesurfer.on('frames-region-dblclick', function(region){
+			console.log('region double clicked on ', region)
+			this.animator.canvas.setActiveObject(region.data)
 			var animateObjectView = new AnimateObjectView(region.data)
 			animateObjectView.render();
 		
 			$("#dialog").dialog({
 				show : true
 			})
-		})
+		}.bind(this))
+		
+		this.wavesurfer.on('frames-region-update-end', function(region){
+			console.log('region udpated ', region)
+			_updateAnimateFrames.call(this, region)
+		}.bind(this))
+		
 		
 		this.wavesurfer.on('ready', function () {
 			//wavesurfer.play();
@@ -76,6 +88,81 @@ define(function(require) {
 		$("#playPause").click(function(){
 			this.wavesurfer.playPause()
 		}.bind(this))
+	}
+	
+	var _updateAnimateFrames = function(region){
+		//console.log('on region change' , region)
+		var animateObject = region.data;
+		if(animateObject.keyframeList && animateObject.keyframeList.length){
+			var firstKeyframe = animateObject.keyframeList[0]
+			var lastKeyframe = animateObject.keyframeList[animateObject.keyframeList.length - 1]
+			var firstKeyframeStartAt = firstKeyframe.startAt
+			var lastKeyframeEndAt = lastKeyframe.endAt
+			
+			var regionStartAt = parseInt(region.start)
+			var regionEndAt = parseInt(region.end)
+			
+			
+			var newDuration = regionEndAt -regionStartAt
+			var oldDuration = lastKeyframeEndAt - firstKeyframeStartAt
+			var action = ""
+			//console.log('oldduration', oldDuration)
+			//console.log('newduration', newDuration)
+			if(newDuration != oldDuration){
+				var perChange = parseInt(((newDuration - oldDuration)/oldDuration)*100)  // parseInt(((regionEndAt - lastKeyframeEndAt)/lastKeyframeEndAt)*100)
+				_strechOrSequezeDurationToAllKeyframes.call(this, perChange, animateObject.keyframeList, region)
+			}
+			if(newDuration == oldDuration && regionStartAt !=  firstKeyframeStartAt){
+				_addDurationToAllKeyframes.call(this, (regionStartAt - firstKeyframeStartAt), animateObject.keyframeList);
+			}
+		}
+	}
+	
+	var _strechOrSequezeDurationToAllKeyframes = function(perChange, keyframeList, region){
+		//console.log('it was sequeze or strech , percentage chagne' , perChange)
+		var startTime = 0
+		for(var i in keyframeList){
+			var keyframe = keyframeList[i];
+			if(i == 0){
+				//console.log('it is first frame')
+				//console.log('keyframe start time' + keyframe.startAt)
+				//console.log('region start time' + region.start)
+				startTime = region.start
+			}
+			
+			if(i != 0){
+				//console.log('setting startAt value for other than first')
+				
+				var delta = ((keyframe.startAt - startTime) * perChange)/100
+				//console.log('change in value ' + delta)
+				keyframe.startAt = parseInt(keyframe.startAt + delta)
+			}
+			if(i != (keyframeList.length - 1)){
+				//console.log('setting endAt value for other last ')
+				var delta2 = (( keyframe.endAt - startTime)* perChange )/100
+				//console.log('befor change' + keyframe.endAt)
+				//console.log('change in value ' + delta2)
+				keyframe.endAt = parseInt(keyframe.endAt + delta2)
+				//console.log('after change' + keyframe.endAt)
+			}else{
+				//console.log('setting endAt value for last ')
+				//console.log('setting value for last keyframe')
+				keyframe.endAt = region.end
+			}
+			
+		}
+	}
+	var _addDurationToAllKeyframes = function(duration, keyframeList){
+		console.log('it was a move')
+		for(var i in keyframeList){
+			var keyframe = keyframeList[i]
+			console.log('befor keyframe startAt ' + keyframe.startAt)
+			console.log('befor keyframe endAt ' + keyframe.endAt)
+			keyframe.startAt = keyframe.startAt + duration
+			keyframe.endAt =  keyframe.endAt + duration
+			console.log('after keyframe startAt ' + keyframe.startAt)
+			console.log('after keyframe endAt ' + keyframe.endAt)
+		}
 	}
 	
 	var _progressAnimation = function(time){

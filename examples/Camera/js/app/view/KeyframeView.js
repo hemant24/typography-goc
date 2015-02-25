@@ -12,23 +12,23 @@ define(function(require) {
 		},
 		
         initialize: function(keyframe){
-			console.log('inside keyframe' , keyframe)
+			//console.log('inside keyframe' , keyframe)
 			this.keyframe = keyframe;
         },
         render: function(){
 			this.parse()
-			console.log('model is ' , this.model)
-			console.log('inside keyframe view' , this.template(this.model))
+			//console.log('model is ' , this.model)
+			//console.log('inside keyframe view' , this.template(this.model))
             return this.template(this.model);
         },
 		parse : function(){
 			this.model = {
 							startAt : this.keyframe['startAt'],
 							endAt : this.keyframe['endAt'],
-							startTop : this.keyframe['properties']['top']['from'],
-							endTop : this.keyframe['properties']['top']['to'],
-							startLeft : this.keyframe['properties']['left'] ? this.keyframe['properties']['left']['from'] : 0,
-							endLeft : this.keyframe['properties']['left']? this.keyframe['properties']['left']['to'] : 0
+							startTop : this.keyframe['from']['top'],
+							endTop : this.keyframe['to']['top'],
+							startLeft : this.keyframe['from']['left'] ? this.keyframe['from']['left'] : 0,
+							endLeft : this.keyframe['to']['left']? this.keyframe['to']['left'] : 0
 						}
 		}
     });

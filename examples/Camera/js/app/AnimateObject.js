@@ -36,8 +36,8 @@ define(function(require) {
 			  keyframeList: this.get('keyframeList')
 			});
 		},
-		keyframe :  function(startTime, endTime, properties, easing){
-			this.keyframeList.push( new Keyframe(startTime, endTime, properties, easing));
+		keyframe :  function(startTime, endTime, from, to, easing){
+			this.keyframeList.push( new Keyframe(startTime, endTime, from, to, easing));
 			return this;
 		},
 		timeToAnimate : function(time){
@@ -66,12 +66,23 @@ define(function(require) {
 		},
 		updateCoords : function(atTime){
 			var keyframe = this.getKeyframeByTime(atTime)
-			//console.log('keyframebytime' , keyframe)
+			
 			if(keyframe){
+				//console.log('keyframebytime' , keyframe)
 			  var propsToAnimate = [ ], prop, skipCallbacks;
+			  for(prop in keyframe.to){
+				//console.log('prop', prop)
+				//console.log('from', keyframe.from[prop])
+				//console.log('to' , keyframe.to[prop])
+				if(keyframe.from[prop] !=  keyframe.to[prop]){
+					propsToAnimate.push(prop);
+				}
+			  }
+			  console.log('prop to animat' ,propsToAnimate)
+			  /*
 			  for (prop in keyframe.properties) {
 				propsToAnimate.push(prop);
-			  }
+			  }*/
 			  for (var i = 0, len = propsToAnimate.length; i < len; i++) {
 				prop = propsToAnimate[i];
 				skipCallbacks = i !== len - 1;
@@ -85,7 +96,7 @@ define(function(require) {
 				}else{
 					easeFn = keyframe.easing
 				}
-				this._animate2(prop, keyframe.properties[prop]['to'], 
+				this._animate2(prop, keyframe['to'][prop], 
 									{	duration : keyframe.endAt - keyframe.startAt,
 										startAt : keyframe.startAt,
 										endAt : keyframe.endAt,
@@ -94,7 +105,7 @@ define(function(require) {
 										onComplete : function(){
 											console.log('animation completed')
 										},
-										from : keyframe.properties[prop]['from']
+										from : keyframe['from'][prop]
 									}, skipCallbacks);
 			  }
 			}
