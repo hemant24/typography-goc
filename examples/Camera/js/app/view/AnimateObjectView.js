@@ -12,20 +12,16 @@ define(function(require) {
 	
 	AnimateObjectView = Backbone.Epoxy.View.extend({
 		template: _.template(template),
-		el: $("#dialog"),
+		//el: $("#editForm"),
 		events: {
             "click #updateObjectBtn": "updateObjectState"
         },
 		
 		updateObjectState : function(){
-			
+			console.log(this.animateObject)
 			console.log('will update object status')
 		},
         initialize: function(animateObject){
-			$("#accordion2").accordion({
-				heightStyle: "content",
-				collapsible : true
-			});
 			this.animateObject = animateObject;
             //this.render();
         },
@@ -40,16 +36,19 @@ define(function(require) {
 			
 			this.parse()
             this.el.innerHTML = this.template(this.model);
-			$("#accordion2").accordion({
-				heightStyle: "content",
-				collapsible : true
-			});
+			
 			console.log('find test sub' , this.$el.find("#testsub"))
 			var accordionAppendTo = this.$el.find("#accordion2")
 			_.each(this.animateObject.get('keyframeList'), function(keyframe){
 				accordionAppendTo.append(new KeyframeView(keyframe).render())
 			})
-			accordionAppendTo.accordion("refresh");    
+			//accordionAppendTo.accordion("refresh");
+			
+			$("#editForm").html(this.el.innerHTML)			
+			$("#accordion2").accordion({
+				heightStyle: "content",
+				collapsible : true
+			});
 			return this;
 			
         },

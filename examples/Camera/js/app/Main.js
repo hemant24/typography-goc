@@ -6,6 +6,7 @@ define(function(require) {
 		require('app/AObjects')
 
 		require('backbone')
+		require('app/view/TransitionItemView');
 		var AudioTrack = require('app/Audio')
 		var Properties = require('app/Properties')
 		
@@ -17,6 +18,9 @@ define(function(require) {
 		var DrawingArea = require('app/DrawingArea')
 		var Previewer = require('app/Previewer')
 		
+		var Transition = require('./Transition');
+		var PropertyTransition = require('./PropertyTransition');
+		//var TransitionView = require('app/view/TransitionView');
 		
 		$("#add").click(function(){
 			
@@ -66,6 +70,24 @@ define(function(require) {
 		var animator = new Animator(canvas,'drawing', 3000);
 		var drawingArea = new DrawingArea(canvas, "#drawingArea")
 		var audioTrack = new AudioTrack('to_add', animator)
+		var transition1 = new Transition({from : 100 , to : 400})
+							.addPropertyTransition(new PropertyTransition({name : 'top', from : '-200', to : '100'}))
+							.addPropertyTransition(new PropertyTransition({name : 'left', from : '0', to : '100'}))
+		var transition2 = new Transition({from : 500 , to : 800})
+							.addPropertyTransition(new PropertyTransition({name : 'angle', from : '90', to : '0'}))
+		var transitions = []
+		transitions.push(transition1)
+		transitions.push(transition2)
+	
+		var aText = new fabric.AText("Hemant",new Properties({angle : 0}))
+		animator.add(aText)
+		aText.addTransitions(transitions)
+		//animator.play()
+		console.log(aText.getKeyframeByTime2(200))
+		
+
+				
+				
 		//var aText = new fabric.AText("Hemant",new Properties())
 		//animator.add(aText)
 		/*
@@ -104,6 +126,16 @@ animator.play()*/
 			
 		})
 		
+		$("#add").click(function(){
+		
+			audioTrack.addFramesRegion({
+					start : 100,
+					end : 800,
+					color : "red",
+					data : aText
+				})
+		})
+		
 		$("#preview").click(function(){
 			console.log(JSON.stringify(Previewer.canvasToJSON(canvas)))
 			Previewer.preview(Previewer.canvasToJSON(canvas), animator.playLength)
@@ -134,6 +166,16 @@ animator.play()*/
 				var leavingEndTime = timeElapsed+eachWordDuration
 				
 				animator.add(text
+					.addTransition( new Transition({from : enteringStartTime , to : enteringEndTime})
+							.addPropertyTransition(new PropertyTransition({name : 'top', from : '-200', to : '250'}))
+							.addPropertyTransition(new PropertyTransition({name : 'left', from : '0', to : '150'})))
+					.addTransition( new Transition({from : enteringEndTime , to : leavingStartTime})
+							.addPropertyTransition(new PropertyTransition({name : 'top', from : '250', to : '250'}))
+							.addPropertyTransition(new PropertyTransition({name : 'left', from : '150', to : '150'})))
+					.addTransition( new Transition({from : leavingStartTime , to : leavingEndTime})
+							.addPropertyTransition(new PropertyTransition({name : 'top', from : '250', to : '400'}))
+							.addPropertyTransition(new PropertyTransition({name : 'left', from : '150', to : '150'})))
+					/*
 					.keyframe(enteringStartTime, enteringEndTime
 						,	new Properties({top : '-200', left : '0'})
 						,	new Properties({top : '250', left : '150'})
@@ -145,7 +187,7 @@ animator.play()*/
 					.keyframe(leavingStartTime, leavingEndTime
 						, 	new Properties({top : '250', left : '150'})
 						,	new Properties({top : '400', left : '150'})
-						,	fabric.util.ease.easeOutBounce)
+						,	fabric.util.ease.easeOutBounce)*/
 				)
 				timeElapsed = timeElapsed + eachWordDuration;
 				audioTrack.addFramesRegion({
@@ -154,9 +196,10 @@ animator.play()*/
 					color : "red",
 					data : text
 				})
+				/*
 				var newDiv = "<h3><a href=\"#\">" + word + " </a></h3><div>New Content</div>";
 				$("#accordion1").append(newDiv)
-				$("#accordion1").accordion("refresh");    
+				$("#accordion1").accordion("refresh");    */
 			
 			}
 			console.log(animator)

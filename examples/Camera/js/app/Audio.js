@@ -12,10 +12,18 @@ define(function(require) {
 	require('wavesurfer.regions');
 	require('wavesurfer.frames.regions');
 	var AnimateObjectView = require('app/view/AnimateObjectView');
+	var Transition = require('./Transition');
+	var PropertyTransition = require('./PropertyTransition');
+	var TransitionItemView = require('app/view/TransitionItemView');
+	var TransitionView = require('app/view/TransitionView');
+	var AnimateObjectModel = require('./AnimateObjectModel');
 	
 	var AudioTrack = function(file, animator){
 		this.file = file;
 		this.animator = animator;
+		var transition = this.transition = new Transition({from : 100 , to : 200})
+		var propertyTransition1 = new PropertyTransition({name : 'top', from : 100, to : 200})
+		this.transition.get("propertyTransitions").add( propertyTransition1)
 		this.init();
 	}
 	
@@ -47,12 +55,49 @@ define(function(require) {
 		this.wavesurfer.on('frames-region-dblclick', function(region){
 			console.log('region double clicked on ', region)
 			this.animator.canvas.setActiveObject(region.data)
+			/*
+			var transition = new Transition({from : 100 , to : 200})
+			var propertyTransition1 = new PropertyTransition({name : 'top', from : 100, to : 200})
+			transition.get("propertyTransitions").add( propertyTransition1)
+			*/
+			var animatedModel = new AnimateObjectModel({name : "test"});
+			_.each(region.data.get("transitionList"), function(t){
+				console.log(t)
+				animatedModel.get("transitionList").add(t)
+			})
+			/*
+			console.log('region data is ' , region.data.get("transitionList"))
+			console.log('TransitionItemView', TransitionItemView)
+			var transitionItemView = new TransitionItemView( {model : region.data.get("transitionList")[0]})
+			transitionItemView.render()
+			*/
+			var transitionView = new TransitionView( {model : animatedModel})
+			transitionView.render()
+			
+			$("#dialog").dialog({
+				show : true,
+				 width: 700,
+				close : function(){
+					transitionView.remove()
+				}
+			})
+			/*
+			$("#dialog").dialog({
+				show : true,
+				close : function(){
+					transitionView.remove()
+				}
+			})*/
+			/*
 			var animateObjectView = new AnimateObjectView(region.data)
 			animateObjectView.render();
 		
 			$("#dialog").dialog({
-				show : true
-			})
+				show : true,
+				close : function(){
+					animateObjectView.remove()
+				}
+			})*/
 		}.bind(this))
 		
 		this.wavesurfer.on('frames-region-update-end', function(region){
@@ -91,13 +136,13 @@ define(function(require) {
 	}
 	
 	var _updateAnimateFrames = function(region){
-		//console.log('on region change' , region)
+		console.log('on region change' , region)
 		var animateObject = region.data;
-		if(animateObject.keyframeList && animateObject.keyframeList.length){
-			var firstKeyframe = animateObject.keyframeList[0]
-			var lastKeyframe = animateObject.keyframeList[animateObject.keyframeList.length - 1]
-			var firstKeyframeStartAt = firstKeyframe.startAt
-			var lastKeyframeEndAt = lastKeyframe.endAt
+		if(animateObject.transitionList && animateObject.transitionList.length){
+			var firstKeyframe = animateObject.transitionList[0]
+			var lastKeyframe = animateObject.transitionList[animateObject.transitionList.length - 1]
+			var firstKeyframeStartAt = firstKeyframe.get('from')
+			var lastKeyframeEndAt = lastKeyframe.get('to')
 			
 			var regionStartAt = parseInt(region.start)
 			var regionEndAt = parseInt(region.end)
@@ -110,19 +155,19 @@ define(function(require) {
 			//console.log('newduration', newDuration)
 			if(newDuration != oldDuration){
 				var perChange = parseInt(((newDuration - oldDuration)/oldDuration)*100)  // parseInt(((regionEndAt - lastKeyframeEndAt)/lastKeyframeEndAt)*100)
-				_strechOrSequezeDurationToAllKeyframes.call(this, perChange, animateObject.keyframeList, region)
+				_strechOrSequezeDurationToAllKeyframes.call(this, perChange, animateObject.transitionList, region)
 			}
 			if(newDuration == oldDuration && regionStartAt !=  firstKeyframeStartAt){
-				_addDurationToAllKeyframes.call(this, (regionStartAt - firstKeyframeStartAt), animateObject.keyframeList);
+				_addDurationToAllKeyframes.call(this, (regionStartAt - firstKeyframeStartAt), animateObject.transitionList);
 			}
 		}
 	}
 	
-	var _strechOrSequezeDurationToAllKeyframes = function(perChange, keyframeList, region){
+	var _strechOrSequezeDurationToAllKeyframes = function(perChange, transitionList, region){
 		//console.log('it was sequeze or strech , percentage chagne' , perChange)
 		var startTime = 0
-		for(var i in keyframeList){
-			var keyframe = keyframeList[i];
+		for(var i in transitionList){
+			var keyframe = transitionList[i];
 			if(i == 0){
 				//console.log('it is first frame')
 				//console.log('keyframe start time' + keyframe.startAt)
@@ -133,35 +178,35 @@ define(function(require) {
 			if(i != 0){
 				//console.log('setting startAt value for other than first')
 				
-				var delta = ((keyframe.startAt - startTime) * perChange)/100
+				var delta = ((keyframe.get('from') - startTime) * perChange)/100
 				//console.log('change in value ' + delta)
-				keyframe.startAt = parseInt(keyframe.startAt + delta)
+				keyframe.set('from', parseInt(keyframe.get('from') + delta))
 			}
-			if(i != (keyframeList.length - 1)){
+			if(i != (transitionList.length - 1)){
 				//console.log('setting endAt value for other last ')
-				var delta2 = (( keyframe.endAt - startTime)* perChange )/100
+				var delta2 = (( keyframe.get('to') - startTime)* perChange )/100
 				//console.log('befor change' + keyframe.endAt)
 				//console.log('change in value ' + delta2)
-				keyframe.endAt = parseInt(keyframe.endAt + delta2)
+				keyframe.set('to', parseInt(keyframe.get('to') + delta2))
 				//console.log('after change' + keyframe.endAt)
 			}else{
 				//console.log('setting endAt value for last ')
 				//console.log('setting value for last keyframe')
-				keyframe.endAt = region.end
+				keyframe.set('to', region.end)
 			}
 			
 		}
 	}
-	var _addDurationToAllKeyframes = function(duration, keyframeList){
+	var _addDurationToAllKeyframes = function(duration, transitionList){
 		console.log('it was a move')
-		for(var i in keyframeList){
-			var keyframe = keyframeList[i]
-			console.log('befor keyframe startAt ' + keyframe.startAt)
-			console.log('befor keyframe endAt ' + keyframe.endAt)
-			keyframe.startAt = keyframe.startAt + duration
-			keyframe.endAt =  keyframe.endAt + duration
-			console.log('after keyframe startAt ' + keyframe.startAt)
-			console.log('after keyframe endAt ' + keyframe.endAt)
+		for(var i in transitionList){
+			var keyframe = transitionList[i]
+			console.log('befor keyframe startAt ' + keyframe.get('from'))
+			console.log('befor keyframe endAt ' + keyframe.get('to'))
+			keyframe.set('from', keyframe.get('from') + duration)
+			keyframe.set('to',   keyframe.get('to') + duration)
+			console.log('after keyframe startAt ' + keyframe.get('from'))
+			console.log('after keyframe endAt ' + keyframe.get('to'))
 		}
 	}
 	

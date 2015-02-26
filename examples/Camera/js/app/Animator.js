@@ -113,7 +113,8 @@ stream.on('data', function(chunk) {
 		console.log('animateFor', this.animateFor)
 		for(var i in this._objs){
 			var obj = this._objs[i];
-			obj.updateCoords(seekTime);
+			//obj.updateCoords(seekTime);
+			obj.updateCoords2(seekTime);
 			_adjustCamera.call(this,obj);
 		}
 		//console.log(this.canvas)

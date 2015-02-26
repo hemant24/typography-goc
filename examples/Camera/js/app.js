@@ -31,6 +31,9 @@ requirejs.config({
 		},
 		'backbone.epoxy' : {
 			deps : ['backbone', 'jquery']
+		},
+		'backbone.associations' : {
+			deps : ['backbone']
 		}
 		
 	}

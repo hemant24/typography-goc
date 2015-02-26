@@ -6,6 +6,7 @@
 	<link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" href="css/jquery-ui.theme.min.css">
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="css/pure-mini.css">
     <style type="text/css">
 	body {
 		font-size : 12px;
@@ -88,7 +89,8 @@
 <div class="ui-layout-east">
 	 	<canvas id="previewCanvas" width="300" height="300" style="border:1px solid #000000;" >
 				</canvas>
-	
+	<div id = "toAppend">
+	</div>
 </div>
 
 <div class="ui-layout-center" style="display: none;">
@@ -97,10 +99,25 @@
 		</canvas>
 	</div>
 	<div id="dialog" title="Basic dialog">
-	  <p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
+		<div id="editForm">
+		<p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
+		</div>
 	</div>
 			
 </div>
-	
+
 <script data-main="js/app.js" src="js/require.js"></script>
+
+ <script type="text/template" id="nameItem"> 
+  <label>First:</label>
+  <input type="text" class="first-name">
+
+  <label>Last:</label>
+  <input type="text" class="last-name">
+
+  <b>Full Name:</b>
+  <span class="first-name"></span>
+  <span class="last-name"></span>
+</script>
+
 </body>

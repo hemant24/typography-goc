@@ -16,6 +16,7 @@ define(function(require) {
 				this.callSuper('initialize', options);
 			}
 			this.keyframeList = options.keyframeList || [];
+			this.transitionList = options.transitionList || [];
 			this.startState = options.startState || {};
 			return this;
 		},
@@ -40,6 +41,14 @@ define(function(require) {
 			this.keyframeList.push( new Keyframe(startTime, endTime, from, to, easing));
 			return this;
 		},
+		addTransition : function(transition){
+			this.transitionList.push(transition)
+			return this;
+		},
+		addTransitions : function(transitions){
+			this.transitionList = transitions
+			return this;
+		},
 		timeToAnimate : function(time){
 			var keyframe = this.getKeyframeByTime(time)
 			//console.log(keyframe)
@@ -47,6 +56,51 @@ define(function(require) {
 				return false;
 			}else{
 				return true;
+			}
+		},
+		getKeyframeByTime2 : function(time){
+			for(var i in this.transitionList){
+				var transition = this.transitionList[i]
+				if(transition.toJSON){
+					transition = transition.toJSON()
+				}
+				if(time >= transition['from'] && time <= transition['to']){
+					return transition;
+				}
+			}
+		},
+		updateCoords2 : function(atTime){
+			var transition = this.getKeyframeByTime2(atTime)
+			
+			if(transition){
+				//console.log('keyframebytime' , keyframe)
+			  var propsToAnimate = [ ], prop, skipCallbacks;
+			  
+			  for (var i = 0, len = transition.propertyTransitions.length; i < len; i++) {
+				var propertyTransition = transition.propertyTransitions[i];
+				skipCallbacks = i !== len - 1;
+				//console.log('keyframe.easeFn is null ', keyframe.easeFn == null)
+				
+				var easeFn = function(t, b, c, d) {return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;}
+				if(propertyTransition.ease == null){
+					if(propertyTransition.easeFn != null){
+						easeFn = eval(propertyTransition.easeFn)
+					}
+				}else{
+					easeFn = propertyTransition.ease
+				}
+				this._animate2(propertyTransition['name'], propertyTransition['to'], 
+									{	duration : transition['from'] - transition['to'],
+										startAt : transition['from'],
+										endAt : transition['to'],
+										seekAt : atTime,
+										easing : easeFn,
+										onComplete : function(){
+											console.log('animation completed')
+										},
+										from :  propertyTransition['from']
+									}, skipCallbacks);
+			  }
 			}
 		},
 		getKeyframeByTime : function(time){
