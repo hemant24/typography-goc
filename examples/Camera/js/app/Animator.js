@@ -110,7 +110,7 @@ stream.on('data', function(chunk) {
 	}
 	Animator.prototype.seek = function(seekTime){
 		console.log('seek time ', seekTime)
-		console.log('animateFor', this.animateFor)
+		//console.log('animateFor', this.animateFor)
 		for(var i in this._objs){
 			var obj = this._objs[i];
 			//obj.updateCoords(seekTime);

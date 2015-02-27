@@ -67,7 +67,7 @@ WaveSurfer.Drawer = {
             }
 
             if (my.params.interact) {
-			console.log('clicked', my)
+			//console.log('clicked', my)
                 my.fireEvent('click', e, my.handleEvent(e));
             }
         });

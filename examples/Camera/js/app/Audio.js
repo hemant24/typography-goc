@@ -48,12 +48,12 @@ define(function(require) {
 	
 	var _bindEvents = function(){
 		this.wavesurfer.on('frames-region-click', function(region){
-			console.log('region clicked on ', region)
+			//console.log('region clicked on ', region)
 			this.animator.canvas.setActiveObject(region.data)
 		}.bind(this))
 		
 		this.wavesurfer.on('frames-region-dblclick', function(region){
-			console.log('region double clicked on ', region)
+			//console.log('region double clicked on ', region)
 			this.animator.canvas.setActiveObject(region.data)
 			/*
 			var transition = new Transition({from : 100 , to : 200})
@@ -62,7 +62,7 @@ define(function(require) {
 			*/
 			var animatedModel = new AnimateObjectModel({name : "test"});
 			_.each(region.data.get("transitionList"), function(t){
-				console.log(t)
+				//console.log(t)
 				animatedModel.get("transitionList").add(t)
 			})
 			/*
@@ -101,7 +101,7 @@ define(function(require) {
 		}.bind(this))
 		
 		this.wavesurfer.on('frames-region-update-end', function(region){
-			console.log('region udpated ', region)
+			//console.log('region udpated ', region)
 			_updateAnimateFrames.call(this, region)
 		}.bind(this))
 		
@@ -121,7 +121,7 @@ define(function(require) {
 		}.bind(this));
 		
 		this.wavesurfer.drawer.on('click', function(e, progress){
-			console.log('click', e, progress)
+			//console.log('click', e, progress)
 		
 		})
 		
@@ -136,7 +136,7 @@ define(function(require) {
 	}
 	
 	var _updateAnimateFrames = function(region){
-		console.log('on region change' , region)
+		//console.log('on region change' , region)
 		var animateObject = region.data;
 		if(animateObject.transitionList && animateObject.transitionList.length){
 			var firstKeyframe = animateObject.transitionList[0]
@@ -198,21 +198,21 @@ define(function(require) {
 		}
 	}
 	var _addDurationToAllKeyframes = function(duration, transitionList){
-		console.log('it was a move')
+		//console.log('it was a move')
 		for(var i in transitionList){
 			var keyframe = transitionList[i]
-			console.log('befor keyframe startAt ' + keyframe.get('from'))
-			console.log('befor keyframe endAt ' + keyframe.get('to'))
+			//console.log('befor keyframe startAt ' + keyframe.get('from'))
+			//console.log('befor keyframe endAt ' + keyframe.get('to'))
 			keyframe.set('from', keyframe.get('from') + duration)
 			keyframe.set('to',   keyframe.get('to') + duration)
-			console.log('after keyframe startAt ' + keyframe.get('from'))
-			console.log('after keyframe endAt ' + keyframe.get('to'))
+			//console.log('after keyframe startAt ' + keyframe.get('from'))
+			//console.log('after keyframe endAt ' + keyframe.get('to'))
 		}
 	}
 	
 	var _progressAnimation = function(time){
+		console.log('current time ', time*1000)
 		this.animator.seek(time*1000);
-		console.log('current time in msec is ', time)
 	}
 	
 	/*

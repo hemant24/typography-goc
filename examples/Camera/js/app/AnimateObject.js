@@ -18,10 +18,11 @@ define(function(require) {
 			this.keyframeList = options.keyframeList || [];
 			this.transitionList = options.transitionList || [];
 			this.startState = options.startState || {};
+			this.listOfStartedTransitions = []
 			return this;
 		},
 		show : function(){
-			console.log('I am custom class')
+			//console.log('I am custom class')
 		},
 		saveToStartState : function(){
 			 this.stateProperties.forEach(function(prop) {
@@ -58,6 +59,34 @@ define(function(require) {
 				return true;
 			}
 		},
+		_markOldStartedTransitionsAsFinished : function(now){
+			var lastTransitionOfObject = this.transitionList[this.transitionList.length - 1]
+			var lastTransitionEndTime = lastTransitionOfObject['to']
+			if(now > lastTransitionEndTime){
+				console.log('updating the object to last transition')
+				for(var i in lastTransitionOfObject['propertyTransitions']){
+					var propertyTransition = lastTransitionOfObject['propertyTransitions'][i]
+					this.set(propertyTransition['name'], propertyTransition['to'])
+				}
+			}else{
+				for(var i in this.listOfStartedTransitions){
+						var startedTransition = this.listOfStartedTransitions[i]
+						var endTime = startedTransition['transition']['to']
+						if(now > endTime){
+							console.log('now time did not completed last started one marking it complete')
+							for(var i in startedTransition['transition']['propertyTransitions']){
+								var propertyTransition = startedTransition['transition']['propertyTransitions'][i]
+								console.log('changing property ' + propertyTransition['name'] + ' from' + propertyTransition['from'] + ' to ' + propertyTransition['to'])
+								//console.log('fast forword value', parseFloat(propertyTransition['to']))
+								this.set(propertyTransition['name'], parseFloat(propertyTransition['to']))
+							}
+						}
+						
+				}
+			}
+			this.listOfStartedTransitions.length = 0
+			this.listOfStartedTransitions = []
+		},
 		getKeyframeByTime2 : function(time){
 			for(var i in this.transitionList){
 				var transition = this.transitionList[i]
@@ -70,9 +99,20 @@ define(function(require) {
 			}
 		},
 		updateCoords2 : function(atTime){
+			console.log('updating coording for ' + this.get('text') + ' , type ' + this.get('type') )
+			var startTime = new Date()
 			var transition = this.getKeyframeByTime2(atTime)
-			
+			var endTime = new Date()
+			console.log('length of last started : ' +  this.listOfStartedTransitions.length )
+		    if(this.listOfStartedTransitions.length > 0) {
+				this._markOldStartedTransitionsAsFinished(atTime)
+			}
+			console.log('length of last started after marking it as finished: ' +  this.listOfStartedTransitions.length )
 			if(transition){
+
+			  this.listOfStartedTransitions.push({startedAt : atTime, transition : transition});
+			  console.log('length of last started after finding transition :  ' +  this.listOfStartedTransitions.length )
+			  console.log('took : ', endTime - startTime, ' to search for keyframe')
 				//console.log('keyframebytime' , keyframe)
 			  var propsToAnimate = [ ], prop, skipCallbacks;
 			  
@@ -96,7 +136,7 @@ define(function(require) {
 										seekAt : atTime,
 										easing : easeFn,
 										onComplete : function(){
-											console.log('animation completed')
+											//console.log('animation completed')
 										},
 										from :  propertyTransition['from']
 									}, skipCallbacks);
@@ -132,7 +172,7 @@ define(function(require) {
 					propsToAnimate.push(prop);
 				}
 			  }
-			  console.log('prop to animat' ,propsToAnimate)
+			  //console.log('prop to animat' ,propsToAnimate)
 			  /*
 			  for (prop in keyframe.properties) {
 				propsToAnimate.push(prop);
@@ -157,7 +197,7 @@ define(function(require) {
 										seekAt : atTime,
 										easing : easeFn,
 										onComplete : function(){
-											console.log('animation completed')
+											//console.log('animation completed')
 										},
 										from : keyframe['from'][prop]
 									}, skipCallbacks);
@@ -199,11 +239,12 @@ define(function(require) {
 			  to = parseFloat(to);
 			}
 			var byValue = to -  options.from;
-			console.log('start at' , options.startAt)
-			console.log('time' , options.seekAt - options.startAt, 'from : ' , options.from,'to', to,'duraation', options.duration, 'byValue', byValue)
-			console.log('easing' , options.easing.name)
+			//console.log('start at' , options.startAt)
+			//console.log('time' , options.seekAt - options.startAt, 'from : ' , options.from,'to', to,'duraation', options.duration, 'byValue', byValue)
+			//console.log('easing' , options.easing.name)
 			var value = options.easing(options.seekAt - options.startAt, options.from, byValue,  options.duration);
-			console.log(options.seekAt - options.startAt, value)
+			//console.log('value is', value)
+			//console.log(options.seekAt - options.startAt, value)
 			if (propPair) {
 				_this[propPair[0]][propPair[1]] = value;
 			}
@@ -253,12 +294,12 @@ define(function(require) {
 			var keyframe = this.getKeyframeByTime(time)
 //			console.log('keyframebytime' , keyframe)
 			if(keyframe && !keyframe.running){
-				console.log('goingt to animate', this, keyframe.properties, keyframe.startAt, keyframe.endAt)
+				//console.log('goingt to animate', this, keyframe.properties, keyframe.startAt, keyframe.endAt)
 				this.animate(keyframe.properties, {
 				  duration: keyframe.endAt - keyframe.startAt,
 				  easing : keyframe.easing,
 				  onComplete : function(){
-					console.log('on complete called', this)
+					//console.log('on complete called', this)
 					keyframe.running = false;
 				  }
 				});

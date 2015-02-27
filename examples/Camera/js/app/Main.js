@@ -79,7 +79,7 @@ define(function(require) {
 		transitions.push(transition1)
 		transitions.push(transition2)
 	
-		var aText = new fabric.AText("Hemant",new Properties({angle : 0}))
+		var aText = new fabric.AText("Hemant",new Properties({angle : 90}))
 		animator.add(aText)
 		aText.addTransitions(transitions)
 		//animator.play()
