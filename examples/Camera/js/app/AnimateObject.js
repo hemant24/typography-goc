@@ -18,7 +18,8 @@ define(function(require) {
 			this.keyframeList = options.keyframeList || [];
 			this.transitionList = options.transitionList || [];
 			this.startState = options.startState || {};
-			this.listOfStartedTransitions = []
+			this.listOfStartedTransitions = [];
+			this.canvas = null;
 			return this;
 		},
 		show : function(){
@@ -60,23 +61,33 @@ define(function(require) {
 			}
 		},
 		_markOldStartedTransitionsAsFinished : function(now){
+			//console.log(this.transitionList)
 			var lastTransitionOfObject = this.transitionList[this.transitionList.length - 1]
+			if(lastTransitionOfObject.toJSON){
+				lastTransitionOfObject = lastTransitionOfObject.toJSON()
+			}
 			var lastTransitionEndTime = lastTransitionOfObject['to']
+			//console.log('now inside forwad frame' + now)
+			//console.log('lastTransitionEndTime ' + lastTransitionEndTime)
 			if(now > lastTransitionEndTime){
-				console.log('updating the object to last transition')
+				//console.log('going to remove the object')
+				if(this.canvas && this.canvas.contains(this)){
+					this.canvas.remove(this);
+				}
+				/*
 				for(var i in lastTransitionOfObject['propertyTransitions']){
 					var propertyTransition = lastTransitionOfObject['propertyTransitions'][i]
 					this.set(propertyTransition['name'], propertyTransition['to'])
-				}
+				}*/
 			}else{
 				for(var i in this.listOfStartedTransitions){
 						var startedTransition = this.listOfStartedTransitions[i]
 						var endTime = startedTransition['transition']['to']
 						if(now > endTime){
-							console.log('now time did not completed last started one marking it complete')
+							//console.log('now time did not completed last started one marking it complete')
 							for(var i in startedTransition['transition']['propertyTransitions']){
 								var propertyTransition = startedTransition['transition']['propertyTransitions'][i]
-								console.log('changing property ' + propertyTransition['name'] + ' from' + propertyTransition['from'] + ' to ' + propertyTransition['to'])
+								//console.log('changing property ' + propertyTransition['name'] + ' from' + propertyTransition['from'] + ' to ' + propertyTransition['to'])
 								//console.log('fast forword value', parseFloat(propertyTransition['to']))
 								this.set(propertyTransition['name'], parseFloat(propertyTransition['to']))
 							}
@@ -99,20 +110,22 @@ define(function(require) {
 			}
 		},
 		updateCoords2 : function(atTime){
-			console.log('updating coording for ' + this.get('text') + ' , type ' + this.get('type') )
+			//console.log('updating coording for ' + this.get('text') + ' , type ' + this.get('type') )
 			var startTime = new Date()
 			var transition = this.getKeyframeByTime2(atTime)
 			var endTime = new Date()
-			console.log('length of last started : ' +  this.listOfStartedTransitions.length )
+			//console.log('length of last started : ' +  this.listOfStartedTransitions.length )
 		    if(this.listOfStartedTransitions.length > 0) {
 				this._markOldStartedTransitionsAsFinished(atTime)
 			}
-			console.log('length of last started after marking it as finished: ' +  this.listOfStartedTransitions.length )
+			//console.log('length of last started after marking it as finished: ' +  this.listOfStartedTransitions.length )
 			if(transition){
-
+			  if(!this.canvas.contains(this)){
+				this.canvas.add(this);
+			  }
 			  this.listOfStartedTransitions.push({startedAt : atTime, transition : transition});
-			  console.log('length of last started after finding transition :  ' +  this.listOfStartedTransitions.length )
-			  console.log('took : ', endTime - startTime, ' to search for keyframe')
+			  //console.log('length of last started after finding transition :  ' +  this.listOfStartedTransitions.length )
+			  //console.log('took : ', endTime - startTime, ' to search for keyframe')
 				//console.log('keyframebytime' , keyframe)
 			  var propsToAnimate = [ ], prop, skipCallbacks;
 			  

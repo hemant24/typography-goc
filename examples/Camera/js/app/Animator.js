@@ -20,8 +20,9 @@ define(function(require) {
 	var now = null;
 	var frameCount = 0;
 	Animator.prototype.add = function(obj){
+		obj.canvas = this.canvas;
 		this._objs.push(obj)
-		this.canvas.add(obj)
+		//this.canvas.add(obj)
 	}
 	var tem = 0
 	
@@ -109,16 +110,20 @@ stream.on('data', function(chunk) {
 		//this._objs[0].start()
 	}
 	Animator.prototype.seek = function(seekTime){
-		console.log('seek time ', seekTime)
+	
+		var now = new Date()
 		//console.log('animateFor', this.animateFor)
+		console.log('total number of object in fabric canvas is : ' + this.canvas._objects.length)
 		for(var i in this._objs){
 			var obj = this._objs[i];
 			//obj.updateCoords(seekTime);
 			obj.updateCoords2(seekTime);
 			_adjustCamera.call(this,obj);
 		}
+		console.log('updating logic took ' + (new Date() - now))
 		//console.log(this.canvas)
 		this.canvas.renderAll();
+		console.log('updating graphics took' + (new Date() - now ))
 	}
 	var _saveFrame = function(frameNumber){
 		if(fs!=null){

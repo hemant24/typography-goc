@@ -211,7 +211,7 @@ define(function(require) {
 	}
 	
 	var _progressAnimation = function(time){
-		console.log('current time ', time*1000)
+		console.log('current time '+ (time*1000))
 		this.animator.seek(time*1000);
 	}
 	
