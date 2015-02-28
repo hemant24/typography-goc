@@ -11,10 +11,10 @@ define(function(require) {
 				return new fabric.AText(object.text, object);
 			} 
 			
-	fabric.ARect = fabric.util.createClass(fabric.Rect, fabric.util.object.extend(fabric.util.object.clone(AnimateObject), {type : 'aRect'}))
+	fabric.ACamera = fabric.util.createClass(fabric.Rect, fabric.util.object.extend(fabric.util.object.clone(AnimateObject), {type : 'aCamera', quality : 1}))
 
-	fabric.ARect.fromObject  = function(object){
-				return new fabric.ARect(object);
+	fabric.ACamera.fromObject  = function(object){
+				return new fabric.ACamera(object);
 			}
 		
 });

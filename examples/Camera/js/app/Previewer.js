@@ -21,7 +21,7 @@ define(function(require) {
 			objectsToSerialize.push(animator._objs[i].toObject())
 		}
 		canvas.getObjects().map(function(instance){
-			if(instance.get('type') == 'aRect'){
+			if(instance.get('type') == 'aCamera'){
 				objectsToSerialize.push(instance.toObject())
 			}
 		})
@@ -43,14 +43,17 @@ define(function(require) {
 		return {background : '' , objects : initialStateObjects}
 	}
 	
-	Previewer['preview'] = function(canvasJSON, playLength){
+	Previewer['preview'] = function(canvasJSON, playLength, quality){
+		if(!quality){
+			quality = 1
+		}
 		var animateFor = 'preview'
 		//console.log('initiating canvas with' , canvasJSON)
 		console.log('evn is ' , env)
 		console.log('playLength is ' , playLength)
 		if(env == 'node'){
 			animateFor = 'server';
-			previewCanvas = fabric.createCanvasForNode(600, 600);
+			previewCanvas = fabric.createCanvasForNode(300 * quality, 300 * quality);
 		}else{
 			previewCanvas = new fabric.Canvas('previewCanvas');
 		}
@@ -60,8 +63,10 @@ define(function(require) {
 			//console.log('called loadFromJSON complete')
 			for(var i in animator._objs){
 				var objectToRemove = animator._objs[i];
-				if(objectToRemove.get('type') != 'aRect'){
+				if(objectToRemove.get('type') != 'aCamera'){
 					previewCanvas.remove(objectToRemove);
+				}else{
+					objectToRemove.set('quality', quality)
 				}
 			}
 			//console.log('animator', animator)
@@ -78,6 +83,8 @@ define(function(require) {
 			//console.log('removed :' , previewCanvas.remove(object))
 		} )
 	}
+	
+	
 	
 	
 	

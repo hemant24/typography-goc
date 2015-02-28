@@ -112,7 +112,7 @@ define(function(require) {
 		})
 animator.play()*/
 			
-		var camera = new fabric.ARect({
+		var camera = new fabric.ACamera({
 		  top: 100,
 		  left : 100,
 		  fill: null,

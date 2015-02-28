@@ -140,7 +140,7 @@ stream.on('data', function(chunk) {
 		}
 	}
 	var _adjustCamera = function(camera){
-		if(camera.get('type') == 'aRect' && (this.animateFor == 'server' || this.animateFor == 'preview' )){
+		if(camera.get('type') == 'aCamera' && (this.animateFor == 'server' || this.animateFor == 'preview' )){
 			//console.log('okay this is camera')
 			pinToCenter.call(this, camera)
 		}
@@ -188,7 +188,8 @@ stream.on('data', function(chunk) {
                           };
 						  
 	function pinToCenter(obj){
-		var scaleLevel = 2
+		console.log('camera quality is '  + obj.get('quality'))
+		var scaleLevel = obj.get('quality')
 		this.canvas.setZoom(scaleLevel)
 		//obj.setCoords() why it is not working
 		var canvasCenterPoint = new fabric.Point(this.canvas.getCenter().left, this.canvas.getCenter().top)
