@@ -9,11 +9,31 @@ define(function(require) {
 	var PropertyTransitionView = require('./PropertyTransitionView')
 	
 	var TransitionItemView = Backbone.Epoxy.View.extend({
+		events: {
+            "click .fromShowOnCanvas": "fromShowOnCanvas",
+			"click .fromGetFromCanvas": "fromGetFromCanvas"
+        },
 		bindings: {
 			"input.startAt": "value:from,events:['keyup']",
-			"input.endAt": "value:to,events:['keyup']"
+			"input.endAt": "value:to,events:['keyup']",
+			"span.frameFrom": "text:from",
+			"span.frameTo": "text:to"
 		 },
-		initialize : function(){
+		fromShowOnCanvas : function(){
+			console.log('okay will display')
+			console.log(this.model)
+		},
+		fromGetFromCanvas : function(){
+			var propertyToFetch = []
+			this.model.get("propertyTransitions").each(function(propertyTransition){
+				var currentValue = this.fabricObject.get(propertyTransition.get('name'))
+				propertyTransition.set("from", currentValue)
+			}.bind(this))
+			
+		},
+		initialize : function(params){
+			this.model = params.model;
+			this.fabricObject = params.fabricObject;
 			this.template = _.template(template);
 			//console.log(this.template())
 			this.$el.html(this.template());

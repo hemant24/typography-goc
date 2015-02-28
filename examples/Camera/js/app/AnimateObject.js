@@ -4,6 +4,8 @@ if (typeof define !== 'function') {
 define(function(require) {
 	var Keyframe = require('./Keyframe')
 	var fabric = require('./Fabric')
+	var Properties = require('./Properties')
+	var PropertyTransition = require('./NodePropertyTransition') //Will break node compatibility
 	return {
 		initialize: function() {
 			var text="defalt" ,options={}
@@ -20,6 +22,16 @@ define(function(require) {
 			this.startState = options.startState || {};
 			this.listOfStartedTransitions = [];
 			this.canvas = null;
+			this.supportedProperties = {
+				top : '',
+				left : '',
+				angle : '',
+				fontSize : '',
+				scaleX : '',
+				scaleY : '',
+				opacity : ''
+			
+			}
 			return this;
 		},
 		show : function(){
@@ -31,6 +43,11 @@ define(function(require) {
 			}, this);
 		},
 		toObject: function() {
+			return fabric.util.object.extend(this.callSuper('toObject'), {
+			  transitionList: this.get('transitionList')
+			});
+		},
+		toObject_Old: function() {
 			var keyframeList = this.get('keyframeList')
 			for(var i in keyframeList){
 				keyframeList[i]['easeFn'] = 'fabric.util.ease.' + keyframeList[i]['easing'].name
@@ -43,7 +60,34 @@ define(function(require) {
 			this.keyframeList.push( new Keyframe(startTime, endTime, from, to, easing));
 			return this;
 		},
-		addTransition : function(transition){
+		addTransition : function(transition, atIndex){
+			var listOfPropertiesCurrentlyHave = [];
+			transition.get('propertyTransitions').each(function(propertyTransition){
+				listOfPropertiesCurrentlyHave.push(propertyTransition.get('name'))
+			});
+			var transitionToFetchFrom = null
+			if(!atIndex){
+				if(this.transitionList.length == 0){
+					atIndex = -1
+				}else{
+					atIndex = this.transitionList.length - 1
+				}
+			}
+			for(var prop in this.supportedProperties){
+				if(listOfPropertiesCurrentlyHave.indexOf(prop) == -1){
+					if(atIndex == -1){
+						transitionToFetchFrom = this
+						transition.get('propertyTransitions').add(new PropertyTransition({name : prop , from : transitionToFetchFrom.get(prop), to : transitionToFetchFrom.get(prop)}))
+					}else{
+						transitionToFetchFrom = this.transitionList[atIndex]
+						transitionToFetchFrom.get('propertyTransitions').each(function(propTrans){
+							if(propTrans.get('name') == prop){
+								transition.get('propertyTransitions').add(new PropertyTransition({name : prop , from : propTrans.get('to'), to : propTrans.get('to')}))
+							}
+						})
+					}
+				}
+			}
 			this.transitionList.push(transition)
 			return this;
 		},
@@ -113,6 +157,8 @@ define(function(require) {
 			//console.log('updating coording for ' + this.get('text') + ' , type ' + this.get('type') )
 			var startTime = new Date()
 			var transition = this.getKeyframeByTime2(atTime)
+			//console.log('atTime' , atTime)
+			//console.log('transition', transition)
 			var endTime = new Date()
 			//console.log('length of last started : ' +  this.listOfStartedTransitions.length )
 		    if(this.listOfStartedTransitions.length > 0) {

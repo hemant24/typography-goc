@@ -10,7 +10,9 @@ define(function(require) {
 	
 	var TransitionView = Backbone.View.extend({
 		el : "#editForm",
-		initialize : function(){
+		initialize : function(params){
+			this.model = params.model
+			this.fabricObject = params.fabricObject
 			this.template = _.template(template);
 			//console.log(this.template())
 			this.$el.html(this.template({model : {}}));
@@ -22,7 +24,7 @@ define(function(require) {
 				//console.log(appendTo.find("#accordion2"))
 				//console.log(new TransitionItemView({model:transition}).render().el)
 				
-				appendTo.find("#accordion2").append(new TransitionItemView({model:transition}).render().el);
+				appendTo.find("#accordion2").append(new TransitionItemView({model:transition, fabricObject : params.fabricObject}).render().el);
 			})
 			
 			$("#accordion2").accordion({

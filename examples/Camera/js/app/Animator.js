@@ -59,8 +59,7 @@ define(function(require) {
 	}
 	Animator.prototype.play = function(){
 		if(this.animateFor == 'server'){
-			console.log(this.playLength)
-			var sequence = new Sequence(0, 1*60*1000, 1000/this.fps);
+			var sequence = new Sequence(0, this.playLength, 1000/this.fps);
 			//var sequence = new Sequence(0, 202, 30);
 			_createFrames.call(this, sequence)
 			/*out = fs.createWriteStream(__dirname + '/output/' + '/helloworld.png');
@@ -118,7 +117,7 @@ stream.on('data', function(chunk) {
 			var obj = this._objs[i];
 			//obj.updateCoords(seekTime);
 			obj.updateCoords2(seekTime);
-			_adjustCamera.call(this,obj);
+			_adjustCamera.call(this, obj);
 		}
 		console.log('updating logic took ' + (new Date() - now))
 		//console.log(this.canvas)

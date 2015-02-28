@@ -71,7 +71,7 @@ define(function(require) {
 			var transitionItemView = new TransitionItemView( {model : region.data.get("transitionList")[0]})
 			transitionItemView.render()
 			*/
-			var transitionView = new TransitionView( {model : animatedModel})
+			var transitionView = new TransitionView( {model : animatedModel, fabricObject : region.data})
 			transitionView.render()
 			
 			$("#dialog").dialog({
@@ -121,9 +121,10 @@ define(function(require) {
 		}.bind(this));
 		
 		this.wavesurfer.drawer.on('click', function(e, progress){
-			//console.log('click', e, progress)
-		
-		})
+			var duration = this.wavesurfer.getDuration();
+			var elapsedTime = progress * duration * 1000
+			this.animator.seek(elapsedTime);
+		}.bind(this))
 		
 		this.wavesurfer.enableDragSelection({
 			color: randomColor(0.1)

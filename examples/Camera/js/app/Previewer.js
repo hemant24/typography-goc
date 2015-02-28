@@ -15,6 +15,21 @@ define(function(require) {
 	
 	var previewCanvas = null;
 	
+	Previewer['animatorToJSON'] = function(animator, canvas){
+		var objectsToSerialize = []
+		for(var i in animator._objs){
+			objectsToSerialize.push(animator._objs[i].toObject())
+		}
+		canvas.getObjects().map(function(instance){
+			if(instance.get('type') == 'aRect'){
+				objectsToSerialize.push(instance.toObject())
+			}
+		})
+		
+		return {background : '' , objects : objectsToSerialize}
+		
+	}
+	
 	Previewer['canvasToJSON'] = function(canvas){
 		var initialStateObjects = []
 		initialStateObjects = canvas.getObjects().map(function(instance){
@@ -32,6 +47,7 @@ define(function(require) {
 		var animateFor = 'preview'
 		//console.log('initiating canvas with' , canvasJSON)
 		console.log('evn is ' , env)
+		console.log('playLength is ' , playLength)
 		if(env == 'node'){
 			animateFor = 'server';
 			previewCanvas = fabric.createCanvasForNode(600, 600);
@@ -42,14 +58,24 @@ define(function(require) {
 		//animator.play()
 		previewCanvas.loadFromJSON(canvasJSON, function(){
 			//console.log('called loadFromJSON complete')
-			//console.log(animator)
+			for(var i in animator._objs){
+				var objectToRemove = animator._objs[i];
+				if(objectToRemove.get('type') != 'aRect'){
+					previewCanvas.remove(objectToRemove);
+				}
+			}
+			//console.log('animator', animator)
+			//console.log('objects in cnavas' , previewCanvas.getObjects())
 			//previewCanvas.setZoom(2)
 			animator.play()
 			//animator.seek( $("#seekTime").val())
 			//previewCanvas.renderAll();
 			//startAnimation();
 		}, function(o, object){
+			//console.log(this)
+			//console.log(object)
 			animator.add(object)
+			//console.log('removed :' , previewCanvas.remove(object))
 		} )
 	}
 	

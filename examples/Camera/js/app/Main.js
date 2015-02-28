@@ -80,11 +80,20 @@ define(function(require) {
 		transitions.push(transition2)
 	
 		var aText = new fabric.AText("Hemant",new Properties({angle : 90}))
-		animator.add(aText)
+		//animator.add(aText)
 		aText.addTransitions(transitions)
 		//animator.play()
 		console.log(aText.getKeyframeByTime2(200))
 		
+		canvas.add(new fabric.Line([0, -1000, 0, 1000], {
+			stroke: 'black',
+			selectable  : false
+		}));
+		
+		canvas.add(new fabric.Line([-1000,0, 1000, 0], {
+			stroke: 'black',
+			selectable  : false
+		}));
 
 				
 				
@@ -105,23 +114,26 @@ animator.play()*/
 			
 		var camera = new fabric.ARect({
 		  top: 100,
+		  left : 100,
 		  fill: null,
 		  stroke: "red",
 		  strokeWidth: 3,
 		  width: 300,
-		  height: 300
+		  height: 300,
+		  perPixelTargetFind  : true
 		})//.keyframe(800, 900, {left : 170});
 		camera.lockScalingX = true;
 		camera.lockScalingY = true;
 		camera.lockRotation = true;
 		camera.saveToStartState();
 
-		animator.add(camera)
+		canvas.add(camera)
 		
 		
 		//animator.play();
 		
 		$("#seekBtn").click(function(){
+			console.log("seeking to " ,  $("#seekTime").val())
 			animator.seek( $("#seekTime").val())
 			
 		})
@@ -137,8 +149,10 @@ animator.play()*/
 		})
 		
 		$("#preview").click(function(){
-			console.log(JSON.stringify(Previewer.canvasToJSON(canvas)))
-			Previewer.preview(Previewer.canvasToJSON(canvas), animator.playLength)
+			console.log('going to call previwer')
+			console.log(JSON.stringify(Previewer.animatorToJSON(animator, canvas)))
+			//console.log(JSON.stringify(Previewer.canvasToJSON(canvas)))
+			Previewer.preview(JSON.stringify(Previewer.animatorToJSON(animator, canvas)), 2000 )//animator.playLength)
 		})
 		
 		$("#generate").click(function(){
